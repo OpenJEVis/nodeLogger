@@ -1,0 +1,232 @@
+[
+  {
+    "id": "29f87a05ece2d61c",
+    "type": "subflow",
+    "name": "API",
+    "info": "",
+    "category": "",
+    "in": [],
+    "out": [],
+    "env": [],
+    "meta": {},
+    "color": "#DDAA99"
+  },
+  {
+    "id": "2fa503bf257fe86a",
+    "type": "http in",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "url": "/api/data",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 530,
+    "y": 320,
+    "wires": [
+      [
+        "8724b195b23c2e90"
+      ]
+    ]
+  },
+  {
+    "id": "8724b195b23c2e90",
+    "type": "node-red-contrib-basicauth",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "realm": "",
+    "username": "username",
+    "password": "password",
+    "x": 750,
+    "y": 320,
+    "wires": [
+      [
+        "132b6ee371b53941"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "6a2284d8a956b9bf",
+    "type": "function",
+    "z": "29f87a05ece2d61c",
+    "name": "set from",
+    "func": "d = new Date(msg.payload.from);\nmsg.payload.from = d;\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1200,
+    "y": 320,
+    "wires": [
+      [
+        "70a7678a2052a09e"
+      ]
+    ]
+  },
+  {
+    "id": "3697acaea911043c",
+    "type": "http response",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "statusCode": "",
+    "headers": {},
+    "x": 1770,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "132b6ee371b53941",
+    "type": "change",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "rules": [
+      {
+        "t": "move",
+        "p": "payload.id",
+        "pt": "msg",
+        "to": "topic",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 990,
+    "y": 320,
+    "wires": [
+      [
+        "6a2284d8a956b9bf"
+      ]
+    ]
+  },
+  {
+    "id": "70a7678a2052a09e",
+    "type": "function",
+    "z": "29f87a05ece2d61c",
+    "name": "set until",
+    "func": "\nif(msg.payload.until != \"undefined\" && msg.payload.until != null){\n   d = new Date(msg.payload.until);\nmsg.payload.until = d;\nreturn msg; \n}else{\n    return msg\n}\n",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1360,
+    "y": 320,
+    "wires": [
+      [
+        "86a3d9b788ba3308"
+      ]
+    ]
+  },
+  {
+    "id": "c30d481d89be887c",
+    "type": "http in",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "url": "/api/trends",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 510,
+    "y": 220,
+    "wires": [
+      [
+        "f52c21869fa1a1a5"
+      ]
+    ]
+  },
+  {
+    "id": "23d1eeba0e448ced",
+    "type": "http response",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "statusCode": "",
+    "headers": {},
+    "x": 1450,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "6ec33ec3e24b825d",
+    "type": "change",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "rules": [
+      {
+        "t": "set",
+        "p": "topic",
+        "pt": "msg",
+        "to": "trends",
+        "tot": "str"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 850,
+    "y": 240,
+    "wires": [
+      [
+        "7e903a8e400a24de"
+      ]
+    ]
+  },
+  {
+    "id": "f52c21869fa1a1a5",
+    "type": "node-red-contrib-basicauth",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "realm": "",
+    "username": "admin",
+    "password": "envidatec4u",
+    "x": 680,
+    "y": 220,
+    "wires": [
+      [
+        "6ec33ec3e24b825d"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "7e903a8e400a24de",
+    "type": "requestData",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "configuration": "9ff456ea68c4474f",
+    "x": 1090,
+    "y": 240,
+    "wires": [
+      [
+        "23d1eeba0e448ced"
+      ]
+    ]
+  },
+  {
+    "id": "86a3d9b788ba3308",
+    "type": "requestData",
+    "z": "29f87a05ece2d61c",
+    "name": "",
+    "configuration": "9ff456ea68c4474f",
+    "x": 1530,
+    "y": 340,
+    "wires": [
+      [
+        "3697acaea911043c"
+      ]
+    ]
+  },
+  {
+    "id": "9ff456ea68c4474f",
+    "type": "SQL-DB",
+    "name": "sql-lite",
+    "path": "/home/pi/mydb.db",
+    "trend_table": "trend",
+    "data_table": "data"
+  }
+]

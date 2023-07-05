@@ -1,6 +1,6 @@
 {
   "name": "@envidatec/node-red-contrib-logger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Logs Data into SQL-Lite",
   "keywords": [ "node-red" ],
   "scripts": {
@@ -20,6 +20,7 @@
     }
   },
   "dependencies": {
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "node-red-contrib-basicauth": "^1.0.4"
   }
 }
