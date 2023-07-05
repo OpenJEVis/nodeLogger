@@ -1,0 +1,69 @@
+<!-- Authentication node-->
+<script type="text/javascript">
+    RED.nodes.registerType('requestData', {
+        category: 'JEVis',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+            configuration: {value: "", type: "SQL-DB", required: true},
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-database",
+        label: function () {
+            return this.name || "requestData";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="requestData">
+<div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+</div>
+<div class="form-row">
+    <label for="node-input-configuration">Configuration</label>
+    <input type="text" id="node-input-configuration">
+</div>
+
+
+
+</script>
+
+<script type="text/x-red" data-help-name="requestData">
+<p>Requests Data from SQL-Lite</p>
+<h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload.from
+            <span class="property-type">Date</span>
+        </dt>
+        <dd> the start date from which data will be requested </dd>
+          <dt>payload.until
+            <span class="property-type">Date</span>
+        </dt>
+        <dd> the end date until data will be requested </dd>
+           <dt>topic
+            <span class="property-type">String</span>
+        </dt>
+        <dd> the trend ID of the requested data </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+     <ol class="node-ports">
+         <li>Standard output
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">string</span></dt>
+                 <dd>Array of the requested Data</dd>
+             </dl>
+         </li>
+         <li>Standard error
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">string</span></dt>
+                 <dd>occurring error thrown during request of SQL-Lite</dd>
+             </dl>
+         </li>
+     </ol
+
+
+
+</script>

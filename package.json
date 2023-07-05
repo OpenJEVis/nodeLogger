@@ -1,0 +1,25 @@
+{
+  "name": "@envidatec/node-red-contrib-logger",
+  "version": "1.0.0",
+  "description": "Logs Data into SQL-Lite",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenJEVis/nodeLogger.git"
+  },
+  "author": "Daniel Kllinker",
+  "license": "GPL-3.0",
+  "node-red": {
+    "nodes": {
+      "logger": "logger.js",
+      "server": "SQL-DB.js",
+      "requestData": "requestData.js"
+    }
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  }
+}

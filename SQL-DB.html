@@ -1,0 +1,38 @@
+<!--Config node-->
+<script type="text/javascript">
+    RED.nodes.registerType('SQL-DB',{
+        category: 'config',
+        defaults: {
+            name:  {value:""},
+            path : {value:"/home/pi/mydb.db"},
+            trend_table: {value:"trend"},
+            data_table: {value:"data"}
+        },
+        label: function () {
+            return this.name || this;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="SQL-DB">
+<div class="form-row">
+    <label for="node-config-input-name"><i class="icon-tag"></i>Name</label>
+    <input type="text" id="node-config-input-name">
+</div>
+<div class="form-row">
+    <label for="node-config-input-path"><i class="icon-tag"></i>path</label>
+    <input type="text" id="node-config-input-path">
+</div>
+<div class="form-row">
+    <label for="node-config-input-trend_table"><i class="icon-tag"></i>trend_table</label>
+    <input type="text" id="node-config-input-trend_table">
+</div>
+<div class="form-row">
+    <label for="node-config-input-data_table"><i class="icon-tag"></i>data_table</label>
+    <input type="text" id="node-config-input-data_table">
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="accessconfig">
+<p>Help text.</p>
+</script>

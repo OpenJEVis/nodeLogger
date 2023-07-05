@@ -1,0 +1,72 @@
+<!-- Authentication node-->
+<script type="text/javascript">
+    RED.nodes.registerType('logger', {
+        category: 'JEVis',
+        color: '#a6bbcf',
+        defaults: {
+            trendID:{value:""},
+            logsize:{value:60},
+            name: {value: ""},
+            configuration: {value: "", type: "SQL-DB", required: true},
+            logsizeType: { value: "num" }
+        },
+        oneditprepare: function (){
+
+            $("#node-input-trendID").val(this.id);
+
+
+            $("#node-input-logsize").typedInput({
+                type: "str",
+                types: ["num", "env"],
+                typeField: "#node-input-logsizeType"
+            });
+
+
+
+        },
+        oneditsave: function (){
+
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-database",
+        label: function () {
+            return this.name || "logger";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="logger">
+<div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+</div>
+<div class="form-row">
+    <label for="node-input-trendID">trendID</label>
+     <input type="text" id="node-input-trendID">
+</div>
+<div class="form-row">
+    <label for="node-input-configuration">Configuration</label>
+    <input type="text" id="node-input-configuration">
+</div>
+<div class="form-row">
+    <label for="node-input-logsize">Logsize in Days</label>
+    <input type="text" id="node-input-logsize">
+    <input type="hidden" id="node-input-logsizeType">
+</div>
+
+</script>
+
+<script type="text/x-red" data-help-name="logger">
+<p>Wirtes Data into SQL-Lite</p>
+<h3>Inputs</h3>
+<dl class="message-properties">
+        <dt>payload
+            <span class="property-type">string | buffer</span>
+        </dt>
+        <dd> the payload of the message will be inserted into SQL-Lite </dd>
+    </dl>
+
+
+
+</script>
