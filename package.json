@@ -1,6 +1,6 @@
 {
   "name": "@envidatec/node-red-contrib-logger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Logs Data into SQL-Lite",
   "keywords": [ "node-red" ],
   "scripts": {
