@@ -2,7 +2,7 @@
   "name": "@envidatec/node-red-contrib-logger",
   "version": "1.0.0",
   "description": "Logs Data into SQL-Lite",
-  "main": "index.js",
+  "keywords": [ "node-red" ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
