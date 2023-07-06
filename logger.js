@@ -148,6 +148,10 @@ module.exports = function (RED) {
                     console.log(Date.now()+": "+"logged data : "+msg.payload)
                     db.close();
                     done();
+                }).catch(reason => {
+                    node.status({fill: "red", shape: "dot", text: reason})
+                    console.log(reason);
+                    done(reason);
                 });
             } catch (e) {
                 node.status({fill: "red", shape: "dot", text: e})
