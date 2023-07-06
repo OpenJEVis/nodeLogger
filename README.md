@@ -11,8 +11,10 @@ On receiving message logs data into a SQL-Lite
 
 #### Properties
 
-- Trend ID the Trend ID which represents this instance of node
-- log size in Days the time a trend entry will remain in the SQL-Lite Table 
+| name            | meaning                                            | 
+|-----------------|----------------------------------------------------|
+| TrendID         | Trend ID which represents this instance of node    | 
+| Logsize in Days | how many days the data will remain in the Database |
 
 #### Input
 
@@ -35,14 +37,25 @@ On receiving message logs data into a SQL-Lite
 ### requestData
 
 #### Request an array of entry's of a specific Trend ID
-msg.Topic = Trend_id
-msg.payload.from = Date from which you want to request Data
-msg.payload.until = Date until you want to receive Data
-msg.payload.limit = limit of data entries
+
+
+| message object               | meaning                                       | 
+|------------------------------|-----------------------------------------------|
+| msg.Topic                    | Trend ID                                      | 
+| msg.payload.from             | Date from which you want to request Data      | 
+| msg.payload.until            | Date until you want to receive Data           |  
+| msg.payload.limit            | limit of data entries                         |
+
+
+
 
 ##### Request all available Trends
 
-msg.topic = trends 
+
+| message object               | meaning                               | 
+|------------------------------|---------------------------------------|
+| msg.topic                    | trends                                | 
+
 
 
 

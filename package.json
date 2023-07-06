@@ -1,6 +1,6 @@
 {
   "name": "@envidatec/node-red-contrib-logger",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Logs Data into SQL-Lite",
   "keywords": [ "node-red" ],
   "scripts": {
@@ -12,7 +12,11 @@
   },
   "author": "Daniel Kllinker",
   "license": "GPL-3.0",
+  "engines": {
+    "node": ">=15"
+  },
   "node-red": {
+    "version": ">=2.0",
     "nodes": {
       "logger": "logger.js",
       "server": "SQL-DB.js",

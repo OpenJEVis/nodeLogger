@@ -2,15 +2,10 @@ const sqlite3 = require("sqlite3");
 const {promisify} = require("util");
 module.exports = function (RED) {
 
-
-    /*
-    Authentication node functions
-    */
     function RequestNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
         node.jevisid = config.jevisid;
-        // Retrieve the configuration node
         node.configuration = RED.nodes.getNode(config.configuration);
         if (node.configuration) {
         } else {
@@ -47,11 +42,6 @@ module.exports = function (RED) {
                         listTrendIds += "'";
                     }
                 }
-                console.log(listTrendIds)
-
-
-
-
                 let until;
                 if (msg.payload.until != "undefined" && msg.payload.until != null) {
                      until = new Date(msg.payload.until);
@@ -101,9 +91,6 @@ module.exports = function (RED) {
                     return res;
 
                 };
-
-
-
                 const requestData = async ({trend, data_table, trend_table, from,until,limit}) => {
                     let queryString;
                     if ((msg.payload.from == null || msg.payload.from == "undefined") && (msg.payload.until == null || msg.payload.until == "undefined")) {
@@ -138,14 +125,15 @@ module.exports = function (RED) {
                         result = await requestData({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
                         return result;
                     }
-
-
-                    //await query(createTableQuery);
                 };
                 run().then(r => {
                     db.close()
                     msg.payload = r;
                     node.send(msg);
+                }).catch(reason => {
+                    node.status({fill: "red", shape: "dot", text: reason})
+                    console.log(reason);
+                    done(reason)
                 });
 
 
