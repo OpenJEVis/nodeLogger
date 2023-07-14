@@ -9,7 +9,6 @@ module.exports = function (RED) {
     function LoggerNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        node.jevisid = config.jevisid;
         node.configuration = RED.nodes.getNode(config.configuration);
 
         this.on('input', function (msg, send, done) {
@@ -100,9 +99,9 @@ module.exports = function (RED) {
                                              VALUES (${values})`);
 
                     if (status == 0) {
-                        node.status({fill: "green", shape: "dot", text: "Last value written at: " + object.date_time +" with status: "+status});
+                        node.status({fill: "green", shape: "dot", text: "Last value ("+msg.payload+") written at: " + object.date_time +" with status: "+status});
                     }else {
-                        node.status({fill: "yellow", shape: "dot", text: "Last value written at: " + object.date_time +" with status: "+status});
+                        node.status({fill: "yellow", shape: "dot", text: "Last value ("+msg.payload+") written at: " + object.date_time +" with status: "+status});
                     }
 
                     return res;

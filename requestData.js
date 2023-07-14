@@ -5,7 +5,6 @@ module.exports = function (RED) {
     function RequestNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        node.jevisid = config.jevisid;
         node.configuration = RED.nodes.getNode(config.configuration);
         if (node.configuration) {
         } else {
@@ -127,6 +126,8 @@ module.exports = function (RED) {
                     }
                 };
                 run().then(r => {
+                    if (r.length == 0)  node.status({fill: "yellow", shape: "dot", text: "No Data Available for this Time Intervall"});
+                    else node.status({fill: "green", shape: "dot", text: r.length+" Data Samples Received"});
                     db.close()
                     msg.payload = r;
                     node.send(msg);
