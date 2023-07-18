@@ -26,7 +26,8 @@ module.exports = function (RED) {
                 console.log(msg);
 
                 let trendID = String(config.id);
-                let now = new Date();
+                let now;
+                now = setNow(msg);
                 let deleteDate = new Date();
 
                 deleteDate.setDate(deleteDate.getDate() - config.logsize);
@@ -215,4 +216,11 @@ function pad(num, size) {
     num = num.toString();
     while (num.length < size) num = "0" + num;
     return num;
+}
+function setNow(msg) {
+    if (msg.date_time == null || msg.date_time == "undefined") {
+        return new Date();
+    } else {
+        return new Date(msg.date_time)
+    }
 }
