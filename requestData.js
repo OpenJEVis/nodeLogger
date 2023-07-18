@@ -1,11 +1,7 @@
-const sqlite3 = require("sqlite3");
-const {promisify} = require("util");
 module.exports = function (RED) {
-
     function RequestNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        node.jevisid = config.jevisid;
         node.configuration = RED.nodes.getNode(config.configuration);
         if (node.configuration) {
         } else {
@@ -15,12 +11,8 @@ module.exports = function (RED) {
 
 
             try {
-                const sqlite3 = require('sqlite3');
-                const {promisify} = require("util");
-                var db = new sqlite3.Database(node.configuration.path);
-                const query = promisify(db.all).bind(db);
-
-                db.configure("busyTimeout", 2000);
+                const db = require('better-sqlite3')(node.configuration.path);
+                db.pragma('journal_mode');
 
                 console.log(typeof msg.topic)
                 let listTrendIds = "";
@@ -57,7 +49,7 @@ module.exports = function (RED) {
                 let from = new Date(msg.payload.from);
 
                 const createdataTable = async ({date_table,trend_table}) => {
-                    const res = await query(`
+                    const res = await db.prepare(`
                         CREATE TABLE IF NOT EXISTS ${date_table}
                         (
                             "id"
@@ -65,7 +57,7 @@ module.exports = function (RED) {
                             PRIMARY
                             KEY,
                             "trend_id"
-                            TEXT  constraint trend_id  references ${trend_table},
+                            TEXT,
                             "status"
                             INTEGER,
                             "value"
@@ -73,12 +65,12 @@ module.exports = function (RED) {
                             "date_time"
                             TEXT
                         )`);
-                    return res;
+                    res.run();
 
                 };
 
                 const createtrendTable = async ({trend_table}) => {
-                    const res = await query(`
+                    const res = await db.prepare(`
                         CREATE TABLE IF NOT EXISTS ${trend_table}
                         (
                             "id"
@@ -88,10 +80,11 @@ module.exports = function (RED) {
                             name   TEXT,
                             config text
                         )`);
-                    return res;
+                    res.run();
 
                 };
                 const requestData = async ({trend, data_table, trend_table, from,until,limit}) => {
+
                     let queryString;
                     if ((msg.payload.from == null || msg.payload.from == "undefined") && (msg.payload.until == null || msg.payload.until == "undefined")) {
                         queryString =(`SELECT D.id, D.trend_id, D.value, D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
@@ -103,15 +96,13 @@ module.exports = function (RED) {
                                             AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
                     }
 
-                    console.log(queryString);
-                    const res = await query(queryString);
 
-
-                    return res;
+                    const res = await db.prepare(queryString);
+                    return res.all();
                 };
                 const requestTrends = async ({trend_table}) => {
-                    const res = await query(`SELECT DISTINCT * FROM ${trend_table}`)
-                    return res;
+                    const res = await db.prepare(`SELECT DISTINCT * FROM ${trend_table}`)
+                    return res.all();
                 };
                 const run = async () => {
                     //create table if not exited
@@ -127,6 +118,8 @@ module.exports = function (RED) {
                     }
                 };
                 run().then(r => {
+                    if (r.length == 0)  node.status({fill: "yellow", shape: "dot", text: "No Data Available for this Time Intervall"});
+                    else node.status({fill: "green", shape: "dot", text: r.length+" Data Samples Received"});
                     db.close()
                     msg.payload = r;
                     node.send(msg);
