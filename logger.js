@@ -1,11 +1,4 @@
-const sqlite3 = require("sqlite3");
-const {promisify} = require("util");
 module.exports = function (RED) {
-
-
-    /*
-    Authentication node functions
-    */
     function LoggerNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
@@ -13,11 +6,10 @@ module.exports = function (RED) {
 
         this.on('input', function (msg, send, done) {
             try {
-                const sqlite3 = require('sqlite3');
-                const {promisify} = require("util");
-                var db = new sqlite3.Database(node.configuration.path);
-                db.configure("busyTimeout", 5000);
-                const query = promisify(db.all).bind(db);
+                const db = require('better-sqlite3')(node.configuration.path);
+                db.pragma('journal_mode = WAL');
+
+
                 let status = 0;
                 if (msg.error === false) {
                     status = 0;
@@ -53,7 +45,8 @@ module.exports = function (RED) {
 
 
                 const createdataTable = async ({data_table,trend_table}) => {
-                    const res = await query(`
+
+                    const res = await db.prepare(`
                         CREATE TABLE IF NOT EXISTS ${data_table}
                         (
                             "id"
@@ -61,7 +54,7 @@ module.exports = function (RED) {
                             PRIMARY
                             KEY,
                             "trend_id"
-                            TEXT  constraint trend_id  references ${trend_table},
+                            TEXT,
                             "status"
                             INTEGER,
                             "value"
@@ -69,12 +62,13 @@ module.exports = function (RED) {
                             "date_time"
                             TEXT
                         )`);
-                    return res;
+                    res.run();
+
 
                 };
 
                 const createtrendTable = async ({trend_table}) => {
-                    const res = await query(`
+                    const res = await db.prepare(`
                         CREATE TABLE IF NOT EXISTS ${trend_table}
                         (
                             "id"
@@ -84,46 +78,37 @@ module.exports = function (RED) {
                             name   TEXT,
                             config text
                         )`);
-                    return res;
+                    res.run();
 
                 };
 
 
                 const create = async ({table, object}) => {
                     const keys = Object.keys(object).join(",");
-                    const values = Object.values(object)
-                        .map((v) => `"${v}"`)
-                        .join(",");
+                    const res = await db.prepare(`INSERT INTO ${table} (${keys}) VALUES (@trend_id,@status,@value,@date_time) `);
 
-                    const res = await query(`INSERT INTO ${table} (${keys})
-                                             VALUES (${values})`);
 
+                    res.run(object);
                     if (status == 0) {
                         node.status({fill: "green", shape: "dot", text: "Last value ("+msg.payload+") written at: " + object.date_time +" with status: "+status});
                     }else {
                         node.status({fill: "yellow", shape: "dot", text: "Last value ("+msg.payload+") written at: " + object.date_time +" with status: "+status});
                     }
 
-                    return res;
                 };
 
                 const updateTrend = async ({trend_table,object}) => {
                     const keys = Object.keys(object).join(",");
-                    const values = Object.values(object)
-                        .map((v) => `"${v}"`)
-                        .join(",");
-
-                    const res = await query(`REPLACE INTO ${trend_table} (${keys})
-                    VALUES (${values})`);
-                    return res;
+                    const res = await db.prepare(`REPLACE INTO ${trend_table} (${keys}) VALUES (@name,@config,@id)`);
+                    res.run(object);
                 };
 
                 const deleteRows = async ({trend, table, date}) => {
-                    const res = await query(`DELETE
+                    const res = await db.prepare(`DELETE
                                              FROM ${table}
                                              WHERE trend_id = '${trend}'
                                                AND date_time < '${date}'`);
-                    return res;
+                    res.run();
                 };
                 const run = async () => {
                     //create table if not exited
@@ -143,15 +128,23 @@ module.exports = function (RED) {
                     });
                     //await query(createTableQuery);
                 };
-                run().then(r => {
-                    console.log(Date.now()+": "+"logged data : "+msg.payload)
-                    db.close();
-                    done();
-                }).catch(reason => {
-                    node.status({fill: "red", shape: "dot", text: reason})
-                    console.log(reason);
-                    done(reason);
-                });
+
+                    try {
+                        run().then(r => {
+                            console.log(Date.now()+": "+"logged data : "+msg.payload)
+                            db.close();
+                        }).catch(reason => {
+                            node.status({fill: "red", shape: "dot", text: reason})
+                            console.log(reason);
+                            if (reason.code !== 'SQLITE_BUSY') throw reason;
+                        });
+                    } catch (err) {
+                        node.status({fill: "red", shape: "dot", text: err})
+                        if (err.code !== 'SQLITE_BUSY') throw err;
+                    }
+
+
+
             } catch (e) {
                 node.status({fill: "red", shape: "dot", text: e})
                 console.log(e);
@@ -172,17 +165,17 @@ module.exports = function (RED) {
                 let trendID = String(config.id);
 
                 const deleteDataRows = async ({trend, data_table}) => {
-                    const res = await query(`DELETE
+                    const res = await db.prepare(`DELETE
                                              FROM ${data_table}
                                              WHERE trend_id = '${trend}'`);
-                    return res;
+                    res.run();
                 };
 
                 const deleteTrendRows = async ({trend, trend_table}) => {
-                    const res = await query(`DELETE
+                    const res = await db.prepare(`DELETE
                                              FROM ${trend_table}
                                              WHERE id = '${trend}'`);
-                    return res;
+                    res.run();
                 };
 
                 const run = async () => {
