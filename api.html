@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    RED.nodes.registerType('api', {
+        category: 'JEVis',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+            port:{value: 3000,type: "num",required: true},
+            configuration: {value: "", type: "SQL-DB", required: true},
+        },
+        credentials: {
+            username: {type:"text",required:true},
+            password: {type:"password",required:true}
+        },
+
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-database",
+        label: function () {
+            return this.name || "api";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="api">
+<div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+</div>
+<div class="form-row">
+    <label for="node-input-port"><i class="icon-tag"></i> Port</label>
+    <input type="text" id="node-input-port" placeholder="3000">
+</div>
+<div class="form-row">
+    <label for="node-input-configuration">SQL-DB Configuration</label>
+    <input type="text" id="node-input-configuration">
+</div>
+<div class="form-row">
+    <label for="node-input-username"><i class="icon-tag"></i>Username</label>
+    <input type="text" id="node-input-username">
+</div>
+<div class="form-row">
+    <label for="node-input-password"><i class="icon-tag"></i>Password</label>
+    <input type="password" id="node-input-password">
+</div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="api">
+</script>

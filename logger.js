@@ -1,3 +1,4 @@
+const sqlite3 = require("./database/db-access");
 module.exports = function (RED) {
     function LoggerNode(config) {
         RED.nodes.createNode(this, config);
@@ -6,8 +7,8 @@ module.exports = function (RED) {
 
         this.on('input', function (msg, send, done) {
             try {
-                const db = require('better-sqlite3')(node.configuration.path);
-                db.pragma('journal_mode = WAL');
+                const sqlite3 = require('./database/db-access');
+                const sqlite = new sqlite3(node.configuration.path);
 
 
                 let status = 0;
@@ -45,84 +46,23 @@ module.exports = function (RED) {
                 };
 
 
-                const createdataTable = async ({data_table,trend_table}) => {
-
-                    const res = await db.prepare(`
-                        CREATE TABLE IF NOT EXISTS ${data_table}
-                        (
-                            "id"
-                            INTEGER
-                            PRIMARY
-                            KEY,
-                            "trend_id"
-                            TEXT,
-                            "status"
-                            INTEGER,
-                            "value"
-                            TEXT,
-                            "date_time"
-                            TEXT
-                        )`);
-                    res.run();
 
 
-                };
-
-                const createtrendTable = async ({trend_table}) => {
-                    const res = await db.prepare(`
-                        CREATE TABLE IF NOT EXISTS ${trend_table}
-                        (
-                            "id"
-                            Text
-                            PRIMARY
-                            KEY,
-                            name   TEXT,
-                            config text
-                        )`);
-                    res.run();
-
-                };
 
 
-                const create = async ({table, object}) => {
-                    const keys = Object.keys(object).join(",");
-                    const res = await db.prepare(`INSERT INTO ${table} (${keys}) VALUES (@trend_id,@status,@value,@date_time) `);
 
-
-                    res.run(object);
-                    if (status == 0) {
-                        node.status({fill: "green", shape: "dot", text: "Last value ("+msg.payload+") written at: " + object.date_time +" with status: "+status});
-                    }else {
-                        node.status({fill: "yellow", shape: "dot", text: "Last value ("+msg.payload+") written at: " + object.date_time +" with status: "+status});
-                    }
-
-                };
-
-                const updateTrend = async ({trend_table,object}) => {
-                    const keys = Object.keys(object).join(",");
-                    const res = await db.prepare(`REPLACE INTO ${trend_table} (${keys}) VALUES (@name,@config,@id)`);
-                    res.run(object);
-                };
-
-                const deleteRows = async ({trend, table, date}) => {
-                    const res = await db.prepare(`DELETE
-                                             FROM ${table}
-                                             WHERE trend_id = '${trend}'
-                                               AND date_time < '${date}'`);
-                    res.run();
-                };
                 const run = async () => {
-                    //create table if not exited
-                    await createtrendTable({trend_table: node.configuration.trend_table});
 
-                    await createdataTable({trend_table:node.configuration.trend_table,data_table:node.configuration.data_table})
-                    //insert row into table
-                    await create({table: node.configuration.data_table, object: newData});
 
-                    await updateTrend({trend_table:node.configuration.trend_table,object:updatedTrend})
-                    //await countRows({table:"logger",trend:trendID});
-                    //delete rows below delete date
-                    await deleteRows({
+                    await sqlite.createdataTable(node.configuration.trend_table);
+
+                    await sqlite.createdataTable({trend_table:node.configuration.trend_table,data_table:node.configuration.data_table})
+
+                    node.status(await sqlite.createDataEntry({table: node.configuration.data_table, object: newData}));
+
+                    await sqlite.updateTrend({trend_table:node.configuration.trend_table,object:updatedTrend})
+
+                    await sqlite.deleteRows({
                         trend: trendID,
                         table: node.configuration.data_table,
                         date: generateDatabaseDateTime(deleteDate)
@@ -133,11 +73,12 @@ module.exports = function (RED) {
                     try {
                         run().then(r => {
                             console.log(Date.now()+": "+"logged data : "+msg.payload)
-                            db.close();
                         }).catch(reason => {
                             node.status({fill: "red", shape: "dot", text: reason})
                             console.log(reason);
                             if (reason.code !== 'SQLITE_BUSY') throw reason;
+                        }).finally(() => {
+                            sqlite.closeDB;
                         });
                     } catch (err) {
                         node.status({fill: "red", shape: "dot", text: err})
@@ -155,49 +96,48 @@ module.exports = function (RED) {
 
         });
         this.on('close', function(removed, done) {
+            const sqlite3 = require('./database/db-access');
+            const sqlite = new sqlite3(node.configuration.path);
             try{
             if (removed) {
-                const sqlite3 = require('sqlite3');
-                const {promisify} = require("util");
-                var db = new sqlite3.Database(node.configuration.path);
-                db.configure("busyTimeout", 5000);
-                const query = promisify(db.all).bind(db);
+
 
                 let trendID = String(config.id);
 
-                const deleteDataRows = async ({trend, data_table}) => {
-                    const res = await db.prepare(`DELETE
-                                             FROM ${data_table}
-                                             WHERE trend_id = '${trend}'`);
-                    res.run();
-                };
 
-                const deleteTrendRows = async ({trend, trend_table}) => {
-                    const res = await db.prepare(`DELETE
-                                             FROM ${trend_table}
-                                             WHERE id = '${trend}'`);
-                    res.run();
-                };
+
+
 
                 const run = async () => {
 
-                    await deleteDataRows({data_table:node.configuration.data_table,trend:trendID})
-                    await deleteTrendRows({trend_table:node.configuration.trend_table,trend:trendID})
+                    await sqlite.deleteDataRows({data_table:node.configuration.data_table,trend:trendID})
+                    await sqlite.deleteTrendRows({trend_table:node.configuration.trend_table,trend:trendID})
                 }
 
                 run().then(r => {
-                    db.close();
+
                     done();
+                }).catch(reason => {
+                    console.log(reason);
+                    sqlite.closeDB;
                 });
 
 
 
             } else {
-                // This node is being restarted
+                const express = require('express')
+                const app = express();
+                app.get('/gg', (req, res) => {
+                    return res.send('Received a GET HTTP method');
+                });
+
+                app.listen(8000, () =>
+                    console.log(`Example app listening on port ${process.env.PORT}!`),
+                );
             }
             }catch (e){
                 console.log(e);
-                db.close();
+                sqlite.db.close();
                 done(e);
             }
             done();

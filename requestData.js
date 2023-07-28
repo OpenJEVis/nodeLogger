@@ -2,7 +2,9 @@ module.exports = function (RED) {
     function RequestNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
+        node.aggregation = config.aggregation;
         node.configuration = RED.nodes.getNode(config.configuration);
+
         if (node.configuration) {
         } else {
 
@@ -11,8 +13,11 @@ module.exports = function (RED) {
 
 
             try {
-                const db = require('better-sqlite3')(node.configuration.path);
-                db.pragma('journal_mode');
+                const sqlite3 = require('./database/db-access');
+                const sqlite = new sqlite3(node.configuration.path);
+
+
+                let aggregation = node.aggregation;
 
                 console.log(typeof msg.topic)
                 let listTrendIds = "";
@@ -48,85 +53,61 @@ module.exports = function (RED) {
                 }
                 let from = new Date(msg.payload.from);
 
-                const createdataTable = async ({date_table,trend_table}) => {
-                    const res = await db.prepare(`
-                        CREATE TABLE IF NOT EXISTS ${date_table}
-                        (
-                            "id"
-                            INTEGER
-                            PRIMARY
-                            KEY,
-                            "trend_id"
-                            TEXT,
-                            "status"
-                            INTEGER,
-                            "value"
-                            TEXT,
-                            "date_time"
-                            TEXT
-                        )`);
-                    res.run();
-
-                };
-
-                const createtrendTable = async ({trend_table}) => {
-                    const res = await db.prepare(`
-                        CREATE TABLE IF NOT EXISTS ${trend_table}
-                        (
-                            "id"
-                            Text
-                            PRIMARY
-                            KEY,
-                            name   TEXT,
-                            config text
-                        )`);
-                    res.run();
-
-                };
-                const requestData = async ({trend, data_table, trend_table, from,until,limit}) => {
-
-                    let queryString;
-                    if ((msg.payload.from == null || msg.payload.from == "undefined") && (msg.payload.until == null || msg.payload.until == "undefined")) {
-                        queryString =(`SELECT D.id, D.trend_id, D.value, D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
-                                            LIMIT '${limit}' `);
-                    }else {
-                        queryString =(`SELECT D.id, D.trend_id, D.value, D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
-                    }
-
-
-                    const res = await db.prepare(queryString);
-                    return res.all();
-                };
-                const requestTrends = async ({trend_table}) => {
-                    const res = await db.prepare(`SELECT DISTINCT * FROM ${trend_table}`)
-                    return res.all();
-                };
                 const run = async () => {
                     //create table if not exited
-                    await createtrendTable({trend_table:node.configuration.trend_table})
+                    await sqlite.createtrendTable({trend_table:node.configuration.trend_table})
 
-                    await createdataTable({date_table:node.configuration.data_table,trend_table:node.configuration.trend_table});
+                    await sqlite.createdataTable({date_table:node.configuration.data_table,trend_table:node.configuration.trend_table});
+
                     if (msg.topic === "trends") {
-                        result = await requestTrends({trend_table:node.configuration.trend_table})
+                        result = await sqlite.requestTrends({trend_table:node.configuration.trend_table})
                         return result;
                     }else {
-                        result = await requestData({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
-                        return result;
+                        console.log(aggregation)
+
+                        switch (aggregation) {
+                            case "NONE":
+                                result = await sqlite.requestData({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
+                                return result;
+                                break;
+                            case "SUM":
+                                result = await sqlite.requestDataSum({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
+                                return result;
+                                break;
+                            case "AVG":
+                                result = await sqlite.requestDataAvg({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
+                                return result;
+                                break;
+                            case "MIN":
+                                result = await sqlite.requestDataMin({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
+                                return result;
+                                break;
+                            case "MAX":
+                                result = await sqlite.requestDataMax({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
+                                return result;
+                                break;
+                            case "DIFF":
+                                result = await sqlite.requestDataDiff({trend:listTrendIds,from:generateDatabaseDateTime(from),until:generateDatabaseDateTime(until),data_table:node.configuration.data_table,trend_table:node.configuration.trend_table,limit});
+                                return result;
+                                break;
+
+
+                        }
                     }
+
                 };
                 run().then(r => {
+                    console.log(r)
                     if (r.length == 0)  node.status({fill: "yellow", shape: "dot", text: "No Data Available for this Time Intervall"});
                     else node.status({fill: "green", shape: "dot", text: r.length+" Data Samples Received"});
-                    db.close()
                     msg.payload = r;
                     node.send(msg);
                 }).catch(reason => {
                     node.status({fill: "red", shape: "dot", text: reason})
                     console.log(reason);
                     done(reason)
+                }).finally(() => {
+                    sqlite.closeDB;
                 });
 
 
