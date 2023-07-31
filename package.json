@@ -1,10 +1,13 @@
 {
   "name": "@envidatec/node-red-contrib-logger",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Logs Data into SQL-Lite",
-  "keywords": [ "node-red" ],
+  "keywords": [
+    "node-red"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "swagger-autogen": "node ./api/swagger.js"
   },
   "repository": {
     "type": "git",
@@ -20,11 +23,22 @@
     "nodes": {
       "logger": "logger.js",
       "server": "SQL-DB.js",
-      "requestData": "requestData.js"
+      "requestData": "requestData.js",
+      "Rest-Server": "Rest-Server.js"
     }
   },
   "dependencies": {
     "better-sqlite3": "^8.0.0",
-    "node-red-contrib-basicauth": "^1.0.4"
+    "body-parse": "^0.1.0",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-basic-auth": "^1.2.1",
+    "express-openapi": "^12.1.3",
+    "ip": "^1.1.8",
+    "morgan": "^1.10.0",
+    "pino": "^8.14.2",
+    "swagger-autogen": "^2.23.5",
+    "swagger-ui-express": "^5.0.0"
   }
 }

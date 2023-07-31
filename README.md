@@ -57,5 +57,28 @@ On receiving message logs data into a SQL-Lite
 | msg.topic                    | trends                                | 
 
 
+### API
+
+| attribute         | meaning                                     | 
+|-------------------|---------------------------------------------|
+| port              | Port on which Rest Server is running        | 
+| SQL-DB Connection | Connection to SQL-Lite                      |
+| Username          | Username for api authentication (basicAuth) |
+| Password          | Password for api authentication (basicAuth) |
+
+
+
+### Paylaod
+
+| payload  | meaning                                     | 
+|----------|---------------------------------------------|
+| START    | Startes Web Server                          | 
+| STOP     | Stops Web Server                            |
+
+
+#### Api Documentation
+
+url:port/doc
+
 
 

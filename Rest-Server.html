@@ -1,0 +1,60 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Rest-Server', {
+        category: 'JEVis',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+            port: {value: 3000, type: "num", required: true},
+            configuration: {value: "", type: "SQL-DB", required: true},
+        },
+        credentials: {
+            username: {type: "text", required: true},
+            password: {type: "password", required: true}
+        },
+
+        inputs: 1,
+        outputs: 0,
+        icon: "font-awesome/fa-cloud",
+        label: function () {
+            return this.name || "Rest-Server";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Rest-Server">
+<div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+</div>
+<div class="form-row">
+    <label for="node-input-port"><i class="icon-tag"></i> Port</label>
+    <input type="text" id="node-input-port" placeholder="3000">
+</div>
+<div class="form-row">
+    <label for="node-input-configuration">SQL-DB Configuration</label>
+    <input type="text" id="node-input-configuration">
+</div>
+<div class="form-row">
+    <label for="node-input-username"><i class="icon-tag"></i>Username</label>
+    <input type="text" id="node-input-username">
+</div>
+<div class="form-row">
+    <label for="node-input-password"><i class="icon-tag"></i>Password</label>
+    <input type="password" id="node-input-password">
+</div>
+
+
+
+</script>
+
+<script type="text/x-red" data-help-name="Rest-Server">
+<p>Wirtes Data into SQL-Lite</p>
+<h3>Inputs</h3>
+<dl class="message-properties">
+        <dt>payload
+            <span class="property-type">string | buffer</span>
+        </dt>
+        <dd> START: Starts Webserver </dd>
+        <dd> STOP : Stops Webserver </dd>
+    </dl>
+</script>
