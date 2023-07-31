@@ -4,30 +4,29 @@
         color: '#a6bbcf',
         defaults: {
             name: {value: ""},
-            aggregation:{value:"NONE"},
+            aggregation: {value: "NONE"},
             configuration: {value: "", type: "SQL-DB", required: true},
         },
         inputs: 1,
         outputs: 1,
         icon: "font-awesome/fa-database",
-        oneditprepare: function (){
+        oneditprepare: function () {
             $("#node-input-aggregation").typedInput({
                 types: [
                     {
                         value: "NONE",
                         options: [
-                            { value: "NONE", label: "None"},
-                            { value: "SUM", label: "Sum"},
-                            { value: "AVG", label: "Average"},
-                            { value: "MAX", label: "Maximum"},
-                            { value: "MIN", label: "Minimum"},
-                            { value: "DIFF", label: "Difference"}
+                            {value: "NONE", label: "None"},
+                            {value: "SUM", label: "Sum"},
+                            {value: "AVG", label: "Average"},
+                            {value: "MAX", label: "Maximum"},
+                            {value: "MIN", label: "Minimum"},
+                            {value: "DIFF", label: "Difference"}
                         ]
                     }
                 ]
             })
         },
-
 
 
         label: function () {
@@ -49,6 +48,7 @@
     <label for="node-input-configuration">Configuration</label>
     <input type="text" id="node-input-configuration">
 </div>
+
 
 
 
@@ -87,6 +87,7 @@
              </dl>
          </li>
      </ol
+
 
 
 

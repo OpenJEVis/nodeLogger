@@ -20,11 +20,13 @@ const doc = {
         },
         // { ... }
     ],
-    components: {securitySchemes: {
+    components: {
+        securitySchemes: {
             basicAuth: {
-                type:   'http',
+                type: 'http',
                 scheme: 'basic'
-            }}
+            }
+        }
     },
 
 };
