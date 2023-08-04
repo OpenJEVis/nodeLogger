@@ -7,7 +7,7 @@
 | table_trend | name of table where trend config is stored |
 
 ### Logger
-On receiving message logs data into a SQL-Lite 
+On receiving Creates Messages Object to interacting with Sql-Lite
 
 #### Properties
 
@@ -34,6 +34,21 @@ On receiving message logs data into a SQL-Lite
 | 16   | empty Payload     |  
 
 
+
+#### SQL-Lite
+
+#### action
+
+| msg.action     | meaning                                                | payload                                                       |
+|----------------|--------------------------------------------------------|---------------------------------------------------------------|
+| Delete Samples | Deletes  Samples for a trend id before a specific date | object containing : deleteDate,id,value,date_time             |
+| Update Trend   | update Trend configuration                             | object containing : name,config,id                            |
+| Create Sample  | creates sample                                         | object containing : tend_id,status,value,date_time            |
+| Delete Trend   | Deletes all sample + Trend configuration               | id                                                            |
+| Get Data       | Returns Requested Samples                              | object containing : from , until , aggregation, trends, limit |
+| Get All Trends | Deletes all sample + Trend configuration               | returns all Trend Configs                                     |
+
+
 ### requestData
 
 #### Request an array of entry's of a specific Trend ID
@@ -57,7 +72,7 @@ On receiving message logs data into a SQL-Lite
 | msg.topic                    | trends                                | 
 
 
-### API
+### Rest-Server
 
 | attribute         | meaning                                     | 
 |-------------------|---------------------------------------------|
@@ -70,10 +85,10 @@ On receiving message logs data into a SQL-Lite
 
 ### Paylaod
 
-| payload  | meaning                                     | 
-|----------|---------------------------------------------|
-| START    | Startes Web Server                          | 
-| STOP     | Stops Web Server                            |
+| payload  | meaning           | 
+|----------|-------------------|
+| START    | Starts Web Server | 
+| STOP     | Stops Web Server  |
 
 
 #### Api Documentation

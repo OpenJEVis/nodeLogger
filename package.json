@@ -1,6 +1,6 @@
 {
   "name": "@envidatec/node-red-contrib-logger",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Logs Data into SQL-Lite",
   "keywords": [
     "node-red"
@@ -23,8 +23,8 @@
     "nodes": {
       "logger": "logger.js",
       "server": "SQL-DB.js",
-      "requestData": "requestData.js",
-      "Rest-Server": "Rest-Server.js"
+      "Rest-Server": "Rest-Server.js",
+      "SQL-Lite": "SQL-Lite.js"
     }
   },
   "dependencies": {

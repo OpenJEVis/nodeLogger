@@ -1,19 +1,17 @@
-const basicAuth = require('express-basic-auth')
-const sqlite3 = require("../../database/db-access");
-let expression = true
-const pino = require('pino');
-const {query} = require("express");
-const logger = pino({
-    level: 'info'
-});
+
 
 
 module.exports = function (app, config, sqlite, credentials) {
+    const basicAuth = require('express-basic-auth')
+    const sqlite3 = require("../../database/db-access");
+    let expression = true
+    const pino = require('pino');
+    const {query} = require("express");
+
 
     /* NOTE: 100% automatic */
     app.get('/api/trends', basicAuth({authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
     ), (req, res) => {
-        logger.debug("/api/trends");
 
        /* #swagger.responses[401] = { description: "Unauthorized" }*/
 
@@ -39,10 +37,8 @@ module.exports = function (app, config, sqlite, credentials) {
 
         res.setHeader('Content-Type', 'application/json')
         sqlite.requestTrends({trend_table: config.trend_table}).then(value => {
-            logger.debug("Send Value: "+value)
             res.status(200).send(value);
         }).catch(reason => {
-            logger.error(reason);
             res.status(400).send(reason);
         }).finally(() => {
             sqlite3.closeDB;
@@ -53,7 +49,6 @@ module.exports = function (app, config, sqlite, credentials) {
     app.get('/api/data', basicAuth({
             authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
     ), (req, res) => {
-        logger.debug("/api/data"+req.query);
         /* #swagger.security = [{
               "basicAuth": []
       }]
@@ -115,10 +110,8 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.debug(value);
                 res.status(200).send(value);
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
                 sqlite3.closeDB;
@@ -132,11 +125,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.error(value);
                 res.status(200).send(value);
 
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
                 sqlite3.closeDB;
@@ -150,11 +141,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.debug(value);
                 res.status(200).send(value);
 
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
                 sqlite3.closeDB;
@@ -205,11 +194,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.debug(value);
                 res.status(200).send(value);
 
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
                 sqlite3.closeDB;

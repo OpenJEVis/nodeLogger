@@ -5,15 +5,12 @@ const pino = require('pino');
 module.exports = function (RED) {
     function LoggerNode(config) {
         RED.nodes.createNode(this, config);
-        let node = this;
+        const  node = this;
         node.configuration = RED.nodes.getNode(config.configuration,node);
 
         this.on('input', function (msg, send, done) {
+            console.log(config.id +":"+process.memoryUsage())
             try {
-                const sqlite3 = require('./database/db-access');
-                const sqlite = new sqlite3(node.configuration.path,node);
-
-
                 let status = 0;
                 if (msg.error === false) {
                     status = 0;
@@ -28,106 +25,80 @@ module.exports = function (RED) {
 
                 let trendID = String(config.id);
                 let now;
-                now = sqlite.setNow(msg);
+                now = setNow(msg);
                 let deleteDate = new Date();
 
                 deleteDate.setDate(deleteDate.getDate() - config.logsize);
-
                 const newData = {
                     trend_id: String(trendID),
                     status: status,
                     value: msg.payload,
-                    date_time: sqlite.generateDatabaseDateTime(now)
+                    date_time: generateDatabaseDateTime(now)
                 };
+                if (status == 0) {
+
+                    node.status({fill: "green", shape: "dot", text: "Last value ("+newData.value+") written at: " + newData.date_time +" with status: "+newData.status});
+                }else {
+                    node.status({fill: "yellow", shape: "dot", text: "Last value ("+newData.value+") written at: " + newData.date_time +" with status: "+newData.status});
+                }
+                node.send({topic:"Create Sample",payload:newData});
                 const updatedTrend = {
                     name: config.name,
                     config: msg.config,
                     id: trendID
                 };
 
+                node.send({topic:"Update Trend",payload:updatedTrend});
 
-                const run = async () => {
-
-
-                    await sqlite.createdataTable(node.configuration.trend_table);
-
-                    await sqlite.createdataTable({
-                        trend_table: node.configuration.trend_table,
-                        data_table: node.configuration.data_table
-                    })
-
-                    node.status(await sqlite.createDataEntry({table: node.configuration.data_table, object: newData}));
-
-                    await sqlite.updateTrend({trend_table: node.configuration.trend_table, object: updatedTrend})
-
-                    await sqlite.deleteRows({
-                        trend: trendID,
-                        table: node.configuration.data_table,
-                        date: sqlite.generateDatabaseDateTime(deleteDate)
-                    });
-                    //await query(createTableQuery);
+                const deleteSamples = {
+                    deleteDate: deleteDate,
+                    id: trendID
                 };
-
-                try {
-                    run().then(r => {
-                        node.debug(Date.now() + ": " + "logged data : " + msg.payload)
-                    }).catch(reason => {
-                        node.status({fill: "red", shape: "dot", text: reason})
-                        node.error(reason);
-                        done(reason);
-                    }).finally(() => {
-                        sqlite.closeDB;
-                    });
-                } catch (err) {
-                    node.error(err);
-                    node.status({fill: "red", shape: "dot", text: err});
-                    done(err);
-                }
-
-
+                node.send({topic:"Delete Samples",payload:deleteSamples})
+                done();
             } catch (e) {
                 node.status({fill: "red", shape: "dot", text: e})
                 node.error(e);
                 done(e);
             }
+            console.log(config.id +":"+process.memoryUsage())
 
 
         });
         this.on('close', function (removed, done) {
-            const sqlite3 = require('./database/db-access');
-            const sqlite = new sqlite3(node.configuration.path);
             try {
                 if (removed) {
 
-
-                    let trendID = String(config.id);
-
-
-                    const run = async () => {
-
-                        await sqlite.deleteDataRows({data_table: node.configuration.data_table, trend: trendID})
-                        await sqlite.deleteTrendRows({trend_table: node.configuration.trend_table, trend: trendID})
-                    }
-
-                    run().then(r => {
-                    }).catch(reason => {
-                        node.error(reason);
-                        done(reason);
-                    }).finally(() => {
-                        sqlite.closeDB;
-                    });
-
+                    node.send({topic:"Delete Trend", payload:config.id});
 
                 } else {
 
                 }
             } catch (e) {
                 node.error(e);
-                done(e)
+                done(e);
             }finally {
-                sqlite.closeDB;
+                done();
             }
         });
+    }
+    function generateDatabaseDateTime(date) {
+        if (date == undefined) {
+            return undefined;
+        }
+        return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1, 2)}-${pad(date.getUTCDate(), 2)} ${pad(date.getUTCHours(), 2)}:${pad(date.getUTCMinutes(), 2)}:${pad(date.getUTCSeconds(), 2)}`;
+    }
+    function pad(num, size) {
+        num = num.toString();
+        while (num.length < size) num = "0" + num;
+        return num;
+    }
+    function setNow(msg) {
+        if (msg.date_time == null || msg.date_time == "undefined") {
+            return new Date();
+        } else {
+            return new Date(msg.date_time)
+        }
     }
 
     RED.nodes.registerType("logger", LoggerNode);
