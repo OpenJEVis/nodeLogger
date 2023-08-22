@@ -1,0 +1,207 @@
+<script type="text/javascript">
+    RED.nodes.registerType('SQL-Lite', {
+        category: 'JEVis',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+            configuration: {value: "", type: "SQL-DB", required: true},
+            logsizeType: {value: "num"}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-database",
+        label: function () {
+            return this.name || "SQL-Lite";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="SQL-Lite">
+<div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+</div>
+<div class="form-row">
+    <label for="node-input-configuration">SQL-DB Configuration</label>
+    <input type="text" id="node-input-configuration">
+</div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="SQL-Lite">
+<h3>Input</h3>
+<dl class="message-properties">
+        <dt>Topic
+            <span class="property-type">string</span>
+        </dt>
+        <dd>
+         <table>
+            <tr>
+            <th>topic</th>
+            <th>meaning</th>
+            </tr>
+            <tr>
+            <td>Delete Samples</td>
+            <td>Deletes  Samples for a trend id before a specific date</td>
+            </tr>
+            <tr>
+            <td>Update Trends</td>
+            <td>update Trend configuration</td>
+            </tr>
+             <tr>
+            <td>Create Sample</td>
+            <td>creates sample</td>
+            </tr>
+              <tr>
+            <td>Delete Trend</td>
+            <td>Deletes all sample + Trend configuration </td>
+            </tr>
+              <tr>
+            <td>Get Data</td>
+            <td>Returns Requested Samples</td>
+            </tr>
+               <tr>
+            <td>Get All Trends</td>
+            <td>Deletes all sample + Trend configuration</td>
+            </tr>
+          </table>
+         </dd>
+        </dl>
+        <h4>Delete Samples</h4>
+        <dl class="message-properties">
+        <dt>Payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>
+         <table>
+            <tr>
+            <th>payload</th>
+            <th>meaning</th>
+            </tr>
+            <tr>
+            <td>deleteDate</td>
+            <td>Until when Samples will be deleted</td>
+            </tr>
+              <tr>
+            <td>id</td>
+            <td>Trend Id</td>
+            </tr>
+          </table>
+         </dd>
+         </dl>
+        <h4>Update Trends</h4>
+        <dl class="message-properties">
+        <dt>Payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>
+         <table>
+            <tr>
+            <th>payload</th>
+            <th>meaning</th>
+            </tr>
+            <tr>
+            <td>name</td>
+            <td>name of the trend</td>
+            </tr>
+            <tr>
+            <td>config</td>
+            <td>config of update intervall of Trend(cron tab expression / asynchronous</td>
+            </tr>
+            <tr>
+            <td>id</td>
+            <td>id of trend</td>
+            </tr>
+
+          </table>
+         </dd>
+         </dl>
+        <h4>Create Sample</h4>
+        <dl class="message-properties">
+        <dt>Payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>
+         <table>
+            <tr>
+            <th>payload</th>
+            <th>meaning</th>
+            </tr>
+            <tr>
+            <td>trend_id</td>
+            <td>Id of Trend</td>
+            </tr>
+            <tr>
+            <td>status</td>
+            <td>status of sample for further Information on Status Code Section</td>
+            </tr>
+            <tr>
+            <td>value</td>
+            <td>Value of Sample</td>
+            </tr>
+            <tr>
+            <td>date_time</td>
+            <td>Date Time when the Value was logged</td>
+            </tr>
+          </table>
+         </dd>
+         </dl>
+        <h4>Delete Trend</h4>
+        <dl class="message-properties">
+        <dt>Payload
+            <span class="property-type">string</span>
+        </dt>
+        <dd>Trend ID of the trend which should be deleted</dd>
+        </dl>
+        <h3>Get Data</h3>
+        <dt>Payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>
+         <table>
+            <tr>
+            <th>payload</th>
+            <th>meaning</th>
+            </tr>
+            <tr>
+            <td>aggregation</td>
+            <td>aggregation (NONE,DIFF,MAX,MIN,SUM)</td>
+            </tr>
+            <tr>
+            <td>from</td>
+            <td>Start Date Time</td>
+            </tr>
+            <tr>
+            <td>until</td>
+            <td>End Date Time</td>
+            </tr>
+            <tr>
+            <td>limit</td>
+            <td>maximum amount of Samples</td>
+            </tr>
+            <tr>
+            <td>listTrendIds</td>
+            <td>Array of Trend Ids</td>
+            </tr>
+          </table>
+         </dd>
+         </dl>
+         <h3>Outputs</h3>
+         <ol class="node-ports">
+
+         <li>Standard output
+           <h4>Get Data</h4>
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">array</span></dt>
+                 <dd>Array of Sample Objects</dd>
+             </dl>
+              <h4>Get All Trends</h4>
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">array</span></dt>
+                 <dd>Array of Trend Objects</dd>
+             </dl>
+         </li>
+
+     </ol>
+</script>

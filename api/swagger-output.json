@@ -71,6 +71,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         },
         "security": [
@@ -123,7 +126,7 @@
           {
             "name": "aggregation",
             "in": "query",
-            "description": "aggregation methode (none,sum,avg,min,max,diff)",
+            "description": "aggregation methode (NONE,SUM,AVG,MIN,MAX,DIFF)",
             "required": false,
             "schema": {
               "type": "string"
@@ -136,6 +139,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
           }
         },
         "security": [

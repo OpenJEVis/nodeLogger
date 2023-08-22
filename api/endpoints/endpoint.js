@@ -1,19 +1,14 @@
-const basicAuth = require('express-basic-auth')
-const sqlite3 = require("../../database/db-access");
-let expression = true
-const pino = require('pino');
-const {query} = require("express");
-const logger = pino({
-    level: 'info'
-});
-
-
 module.exports = function (app, config, sqlite, credentials) {
+    const basicAuth = require('express-basic-auth')
+    const sqlite3 = require("../../database/db-access");
+    let expression = true
+    const pino = require('pino');
+    const {query} = require("express");
+
 
     /* NOTE: 100% automatic */
     app.get('/api/trends', basicAuth({authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
     ), (req, res) => {
-        logger.debug("/api/trends");
 
        /* #swagger.responses[401] = { description: "Unauthorized" }*/
 
@@ -39,13 +34,11 @@ module.exports = function (app, config, sqlite, credentials) {
 
         res.setHeader('Content-Type', 'application/json')
         sqlite.requestTrends({trend_table: config.trend_table}).then(value => {
-            logger.debug("Send Value: "+value)
             res.status(200).send(value);
         }).catch(reason => {
-            logger.error(reason);
             res.status(400).send(reason);
         }).finally(() => {
-            sqlite3.closeDB;
+            sqlite.closeDB;
         })
     })
 
@@ -53,7 +46,6 @@ module.exports = function (app, config, sqlite, credentials) {
     app.get('/api/data', basicAuth({
             authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
     ), (req, res) => {
-        logger.debug("/api/data"+req.query);
         /* #swagger.security = [{
               "basicAuth": []
       }]
@@ -94,7 +86,7 @@ module.exports = function (app, config, sqlite, credentials) {
 
         /*  #swagger.parameters['aggregation'] = {
              in: 'query',
-             description: 'aggregation methode (none,sum,avg,min,max,diff)',
+             description: 'aggregation methode (NONE,SUM,AVG,MIN,MAX,DIFF)',
              required: false,
              type: 'string'
          }
@@ -106,7 +98,7 @@ module.exports = function (app, config, sqlite, credentials) {
         let until = req.query.until;
         let limit = req.query.limit;
         if (limit == undefined) limit = 1000;
-        if (req.query.aggregation == undefined || req.query.aggregation == "none") {
+        if (req.query.aggregation == undefined || req.query.aggregation == "NONE") {
             sqlite.requestData({
                 trend: getTrendIds(trend),
                 from: from,
@@ -115,15 +107,13 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.debug(value);
                 res.status(200).send(value);
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB;
             });
-        } else if (req.query.aggregation == "sum") {
+        } else if (req.query.aggregation == "SUM") {
             sqlite.requestDataSum({
                 trend: getTrendIds(trend),
                 from: from,
@@ -132,16 +122,14 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.error(value);
                 res.status(200).send(value);
 
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB;
             });
-        } else if (req.query.aggregation == "avg") {
+        } else if (req.query.aggregation == "AVG") {
             sqlite.requestDataAvg({
                 trend: getTrendIds(trend),
                 from: from,
@@ -150,16 +138,14 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.debug(value);
                 res.status(200).send(value);
 
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB;
             });
-        } else if (req.query.aggregation == "max") {
+        } else if (req.query.aggregation == "MAX") {
             sqlite.requestDataMax({
                 trend: getTrendIds(trend),
                 from: from,
@@ -176,9 +162,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB;
             });
-        } else if (req.query.aggregation == "min") {
+        } else if (req.query.aggregation == "MIN") {
             sqlite.requestDataMin({
                 trend: getTrendIds(trend),
                 from: from,
@@ -194,9 +180,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB;
             });
-        } else if (req.query.aggregation == "diff") {
+        } else if (req.query.aggregation == "DIFF") {
             sqlite.requestDataDiff({
                 trend: getTrendIds(trend),
                 from: from,
@@ -205,15 +191,15 @@ module.exports = function (app, config, sqlite, credentials) {
                 trend_table: config.trend_table,
                 data_table: config.data_table
             }).then(value => {
-                logger.debug(value);
                 res.status(200).send(value);
 
             }).catch(reason => {
-                logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB;
             });
+        }else {
+            res.status(422).send("aggregation not found");
         }
 
     })

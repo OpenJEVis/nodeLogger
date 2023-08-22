@@ -1,9 +1,7 @@
-const pino = require('pino');
-
 class Sqlite {
-    constructor(path,node) {
+    constructor(path) {
         this.path = path;
-        this.node = node;
+        //this.node = node;
         this.db = require('better-sqlite3')(path,  { timeout: 20000 });
         this.db.pragma('journal_mode = WAL');
     }
@@ -46,7 +44,7 @@ class Sqlite {
 
     };
     createDataEntry = async ({table, object}) => {
-        this.node.log("Creates Sample: " + JSON.stringify(object));
+        //this.node.log("Creates Sample: " + JSON.stringify(object));
         const keys = Object.keys(object).join(",");
         const res = await this.db.prepare(`INSERT INTO ${table} (${keys}) VALUES (@trend_id,@status,@value,@date_time) `);
 
@@ -61,14 +59,14 @@ class Sqlite {
     };
 
     updateTrend = async ({trend_table,object}) => {
-        this.node.log("update trend: " + JSON.stringify(object));
+        //this.node.log("update trend: " + JSON.stringify(object));
         const keys = Object.keys(object).join(",");
         const res = await this.db.prepare(`REPLACE INTO ${trend_table} (${keys}) VALUES (@name,@config,@id)`);
         res.run(object);
     };
 
     deleteRows = async ({trend, table, date}) => {
-        this.node.debug("delete old samples: " + trend + "date: " + JSON.stringify(date));
+        //this.node.debug("delete old samples: " + trend + "date: " + JSON.stringify(date));
         const res = await this.db.prepare(`DELETE
                                  FROM ${table}
                                  WHERE trend_id = '${trend}'
@@ -78,7 +76,7 @@ class Sqlite {
 
 
     deleteTrendRows = async ({trend, trend_table}) => {
-        this.node.log("delete trend config: " + trend);
+        //this.node.log("delete trend config: " + trend);
         const res = await this.db.prepare(`DELETE
                                  FROM ${trend_table}
                                  WHERE id = '${trend}'`);
@@ -86,14 +84,14 @@ class Sqlite {
     };
 
     deleteDataRows = async ({trend, data_table}) => {
-        this.node.log("delete samples trend: " + trend);
+        //this.node.log("delete samples trend: " + trend);
         const res = await this.db.prepare(`DELETE
                                              FROM ${data_table}
                                              WHERE trend_id = '${trend}'`);
         res.run();
     };
     requestTrends = async ({trend_table}) => {
-        this.node.log("get all trends");
+        //this.node.log("get all trends");
         const res = await this.db.prepare(`SELECT DISTINCT * FROM ${trend_table}`)
         return res.all();
     };
@@ -110,13 +108,13 @@ class Sqlite {
                                             AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
         }
 
-        console.log(queryString);
+        //console.log(queryString);
         const res = await this.db.prepare(queryString);
         return res.all();
     };
 
     requestDataSum = async ({trend, data_table, trend_table, from,until,limit}) => {
-        this.node.log("get sum of: "+trend);
+       // this.node.log("get sum of: "+trend);
 
         let queryString;
         if (from == undefined || from == "undefined") {
@@ -135,7 +133,7 @@ class Sqlite {
     };
 
     requestDataAvg = async ({trend, data_table, trend_table, from,until,limit}) => {
-        this.node.log("get avg of: "+trend);
+       // this.node.log("get avg of: "+trend);
 
         let queryString;
         if (from == undefined || from == "undefined") {
@@ -154,7 +152,7 @@ class Sqlite {
     };
 
     requestDataMin = async ({trend, data_table, trend_table, from,until,limit}) => {
-        this.node.log("get min of: "+trend);
+        //this.node.log("get min of: "+trend);
 
         let queryString;
         if(from == undefined || from == "undefined") {
@@ -173,7 +171,7 @@ class Sqlite {
     };
 
     requestDataMax = async ({trend, data_table, trend_table, from,until,limit}) => {
-        this.node.log("get max of: "+trend);
+        //this.node.log("get max of: "+trend);
 
         let queryString;
         if (from == undefined || from == "undefined") {
@@ -192,7 +190,7 @@ class Sqlite {
     };
 
     requestDataDiff = async ({trend, data_table, trend_table, from,until,limit}) => {
-        this.node.log("get diff of: "+trend);
+        //this.node.log("get diff of: "+trend);
 
 
         this.db.aggregate('getDiff', {
@@ -218,15 +216,21 @@ class Sqlite {
         const res = await this.db.prepare(queryString);
         return res.all();
     };
-
+    closeDB(){
+        this.db.close();
+    }
     closeDB = async () =>{
-        this.node.log("close db connection");
+        //this.node.log("close db connection");
         this.db.close();
 
 }
      generateDatabaseDateTime(date) {
+
          if (date == undefined) {
              return undefined;
+         }
+         if (!date instanceof Date) {
+             date = new Date(date);
          }
         return `${date.getUTCFullYear()}-${this.pad(date.getUTCMonth() + 1, 2)}-${this.pad(date.getUTCDate(), 2)} ${this.pad(date.getUTCHours(), 2)}:${this.pad(date.getUTCMinutes(), 2)}:${this.pad(date.getUTCSeconds(), 2)}`;
     }

@@ -1,4 +1,4 @@
-### SQL Lite config node
+# SQL Lite config node
 | name        | meaning                                    | 
 |-------------|--------------------------------------------|
 | path        | path to database file                      | 
@@ -6,17 +6,17 @@
 | name        | name of config node                        |  
 | table_trend | name of table where trend config is stored |
 
-### Logger
-On receiving message logs data into a SQL-Lite 
+# Logger
+On receiving Creates Messages Object (Create Sample, Update Trend, Delete Samples) to interacting with Sql-Lite Node
 
-#### Properties
+## Properties
 
 | name            | meaning                                            | 
 |-----------------|----------------------------------------------------|
 | TrendID         | Trend ID which represents this instance of node    | 
 | Logsize in Days | how many days the data will remain in the Database |
 
-#### Input
+### Input
 
 | message object | meaning                                             | 
 |----------------|-----------------------------------------------------|
@@ -25,7 +25,7 @@ On receiving message logs data into a SQL-Lite
 
 
 
-#### Status Codes
+### Status Codes
 
 | Code | meaning           | 
 |------|-------------------|
@@ -34,30 +34,103 @@ On receiving message logs data into a SQL-Lite
 | 16   | empty Payload     |  
 
 
-### requestData
 
-#### Request an array of entry's of a specific Trend ID
+## SQL-Lite
 
+## Actions
 
-| message object               | meaning                                       | 
-|------------------------------|-----------------------------------------------|
-| msg.Topic                    | Trend ID                                      | 
-| msg.payload.from             | Date from which you want to request Data      | 
-| msg.payload.until            | Date until you want to receive Data           |  
-| msg.payload.limit            | limit of data entries                         |
-
-
-
-
-##### Request all available Trends
+| topic          | meaning                                                | 
+|----------------|--------------------------------------------------------|
+| Delete Samples | Deletes  Samples for a trend id before a specific date | 
+| Update Trend   | update Trend configuration                             | 
+| Create Sample  | creates sample                                         | 
+| Delete Trend   | Deletes all sample + Trend configuration               | 
+| Get Data       | Returns Requested Samples                              | 
+| Get All Trends | Deletes all sample + Trend configuration               | 
 
 
-| message object               | meaning                               | 
-|------------------------------|---------------------------------------|
-| msg.topic                    | trends                                | 
+### Delete Samples
+
+#### Payload
 
 
-### API
+| Payload    | meaning                                   | 
+|------------|-------------------------------------------|
+| deleteDate | Delete Until when Samples will be deleted | 
+| id         | Trend Id                                  | 
+
+#### Output
+
+None
+
+### Update Trend
+
+#### Payload
+
+| Payload | meaning                                                                | 
+|---------|------------------------------------------------------------------------|
+| name    | name of the trend                                                      | 
+| config  | config of update intervall of Trend(cron tab expression / asynchronous | 
+| id      | id of trend                                                            |
+
+#### Output 
+None
+
+### Create Sample
+
+#### Payload
+
+| Payload      | meaning                                                         | 
+|--------------|-----------------------------------------------------------------|
+| trend_id     | Id of Trend                                                     | 
+| status       | status of sample for further Information on Status Code Section | 
+| value        | Value of Sample                                                 |
+| date_time    | Date Time when the Value was logged                             |
+
+#### Output 
+None
+
+### Delete Trend
+
+
+
+#### Payload
+
+Trend ID of the trend which should be deleted
+
+#### Output 
+None
+
+### Get Data
+
+#### Payload
+
+| Payload        | meaning                             | 
+|----------------|-------------------------------------|
+| aggregation    | aggregation (NONE,DIFF,MAX,MIN,SUM) | 
+| from           | Start Date Time                     | 
+| until          | End Date Time                       |
+| limit          | maximum amount of Samples           |
+| listTrendIds   | Array of Trend Ids                  |
+
+#### Output
+
+Array with the requested Samples
+
+### Get All Trends
+
+#### Payload 
+None
+#### 
+Array of Trends
+
+
+
+
+
+
+
+### Rest-Server
 
 | attribute         | meaning                                     | 
 |-------------------|---------------------------------------------|
@@ -70,10 +143,10 @@ On receiving message logs data into a SQL-Lite
 
 ### Paylaod
 
-| payload  | meaning                                     | 
-|----------|---------------------------------------------|
-| START    | Startes Web Server                          | 
-| STOP     | Stops Web Server                            |
+| payload  | meaning           | 
+|----------|-------------------|
+| START    | Starts Web Server | 
+| STOP     | Stops Web Server  |
 
 
 #### Api Documentation

@@ -27,7 +27,7 @@
 
         },
         inputs: 1,
-        outputs: 0,
+        outputs: 1,
         icon: "font-awesome/fa-database",
         label: function () {
             return this.name || "logger";
@@ -57,13 +57,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="logger">
-<p>Wirtes Data into SQL-Lite</p>
+<p>Creates Message Objects to interact with the SQL-LIte Node</p>
 <h3>Inputs</h3>
 <dl class="message-properties">
         <dt>payload
-            <span class="property-type">string | buffer</span>
+            <span class="property-type">string | double | integer</span>
         </dt>
-        <dd> the payload of the message will be inserted into SQL-Lite </dd>
+        <dd> the payload which will be written into the SQL-Lite </dd>
+        <dt>error
+            <span class="property-type">boolean</span>
+        </dt>
+        <dd> if true entry will be created with status code 16</dd>
     </dl>
 
 
