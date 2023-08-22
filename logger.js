@@ -8,6 +8,13 @@ module.exports = function (RED) {
         const  node = this;
         node.configuration = RED.nodes.getNode(config.configuration,node);
 
+        function getConfig(config) {
+            if (config == undefined || config == "undefined" || config == null) {
+                return "asynchronous";
+            }
+            return config;
+        }
+
         this.on('input', function (msg, send, done) {
             console.log(config.id +":"+process.memoryUsage())
             try {
@@ -19,8 +26,9 @@ module.exports = function (RED) {
                     status = 16;
                 }
                 name = config.name
-                if (msg.payload == null || msg.payload == "undefined") {
+                if (msg.payload == undefined || msg.payload == "undefined") {
                     status = 16;
+                    node.error("Payload is: " + msg.payload);
                 }
 
                 let trendID = String(config.id);
@@ -44,7 +52,7 @@ module.exports = function (RED) {
                 node.send({topic:"Create Sample",payload:newData});
                 const updatedTrend = {
                     name: config.name,
-                    config: msg.config,
+                    config: getConfig(msg.config),
                     id: trendID
                 };
 

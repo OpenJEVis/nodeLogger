@@ -1,6 +1,3 @@
-
-
-
 module.exports = function (app, config, sqlite, credentials) {
     const basicAuth = require('express-basic-auth')
     const sqlite3 = require("../../database/db-access");
@@ -41,7 +38,7 @@ module.exports = function (app, config, sqlite, credentials) {
         }).catch(reason => {
             res.status(400).send(reason);
         }).finally(() => {
-            sqlite3.closeDB;
+            sqlite.closeDB();
         })
     })
 
@@ -89,7 +86,7 @@ module.exports = function (app, config, sqlite, credentials) {
 
         /*  #swagger.parameters['aggregation'] = {
              in: 'query',
-             description: 'aggregation methode (none,sum,avg,min,max,diff)',
+             description: 'aggregation methode (NONE,SUM,AVG,MIN,MAX,DIFF)',
              required: false,
              type: 'string'
          }
@@ -101,7 +98,7 @@ module.exports = function (app, config, sqlite, credentials) {
         let until = req.query.until;
         let limit = req.query.limit;
         if (limit == undefined) limit = 1000;
-        if (req.query.aggregation == undefined || req.query.aggregation == "none") {
+        if (req.query.aggregation == undefined || req.query.aggregation == "NONE") {
             sqlite.requestData({
                 trend: getTrendIds(trend),
                 from: from,
@@ -114,9 +111,9 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB();
             });
-        } else if (req.query.aggregation == "sum") {
+        } else if (req.query.aggregation == "SUM") {
             sqlite.requestDataSum({
                 trend: getTrendIds(trend),
                 from: from,
@@ -130,9 +127,9 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB();
             });
-        } else if (req.query.aggregation == "avg") {
+        } else if (req.query.aggregation == "AVG") {
             sqlite.requestDataAvg({
                 trend: getTrendIds(trend),
                 from: from,
@@ -146,9 +143,9 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB();
             });
-        } else if (req.query.aggregation == "max") {
+        } else if (req.query.aggregation == "MAX") {
             sqlite.requestDataMax({
                 trend: getTrendIds(trend),
                 from: from,
@@ -165,9 +162,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB();
             });
-        } else if (req.query.aggregation == "min") {
+        } else if (req.query.aggregation == "MIN") {
             sqlite.requestDataMin({
                 trend: getTrendIds(trend),
                 from: from,
@@ -183,9 +180,9 @@ module.exports = function (app, config, sqlite, credentials) {
                 logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB();
             });
-        } else if (req.query.aggregation == "diff") {
+        } else if (req.query.aggregation == "DIFF") {
             sqlite.requestDataDiff({
                 trend: getTrendIds(trend),
                 from: from,
@@ -199,8 +196,10 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite3.closeDB;
+                sqlite.closeDB();
             });
+        }else {
+            res.status(422).send("aggregation not found");
         }
 
     })
