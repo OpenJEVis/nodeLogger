@@ -1,0 +1,384 @@
+[
+  {
+    "id": "31a2e5f643e6f15e",
+    "type": "tab",
+    "label": "SQL Lite Example",
+    "disabled": false,
+    "info": "",
+    "env": []
+  },
+  {
+    "id": "e8203592e6e6bb62",
+    "type": "SQL-Lite",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "configuration": "4ec688a8f44460f2",
+    "logsizeType": "num",
+    "x": 1220,
+    "y": 120,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "648fe2d7ef603539",
+    "type": "logger",
+    "z": "31a2e5f643e6f15e",
+    "trendID": "648fe2d7ef603539",
+    "logsize": 60,
+    "name": "",
+    "configuration": "4ec688a8f44460f2",
+    "logsizeType": "num",
+    "x": 650,
+    "y": 120,
+    "wires": [
+      [
+        "e8203592e6e6bb62"
+      ]
+    ]
+  },
+  {
+    "id": "5348d1d02ca91077",
+    "type": "inject",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "60",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 150,
+    "y": 120,
+    "wires": [
+      [
+        "f6ce5f2b942de9e2"
+      ]
+    ]
+  },
+  {
+    "id": "f6ce5f2b942de9e2",
+    "type": "rbe",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "func": "rbe",
+    "gap": "",
+    "start": "",
+    "inout": "out",
+    "septopics": true,
+    "property": "payload",
+    "topi": "topic",
+    "x": 410,
+    "y": 120,
+    "wires": [
+      [
+        "648fe2d7ef603539"
+      ]
+    ]
+  },
+  {
+    "id": "ff7c1492486765d4",
+    "type": "Rest-Server",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "port": "3001",
+    "configuration": "4ec688a8f44460f2",
+    "x": 410,
+    "y": 860,
+    "wires": []
+  },
+  {
+    "id": "6d0fc19639cb7338",
+    "type": "inject",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "START",
+    "payloadType": "str",
+    "x": 130,
+    "y": 840,
+    "wires": [
+      [
+        "ff7c1492486765d4"
+      ]
+    ]
+  },
+  {
+    "id": "69614e9a573e5ed1",
+    "type": "comment",
+    "z": "31a2e5f643e6f15e",
+    "name": "Writes every minute Timestamp into SQL-Lite",
+    "info": "",
+    "x": 540,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "5bdd105e2cd0e681",
+    "type": "inject",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "STOP",
+    "payloadType": "str",
+    "x": 130,
+    "y": 920,
+    "wires": [
+      [
+        "ff7c1492486765d4"
+      ]
+    ]
+  },
+  {
+    "id": "4adcaaf76dcfb9c8",
+    "type": "comment",
+    "z": "31a2e5f643e6f15e",
+    "name": "Webserver with basic auth (admin:admin) on port 3000",
+    "info": "",
+    "x": 540,
+    "y": 760,
+    "wires": []
+  },
+  {
+    "id": "8b339b248271365a",
+    "type": "inject",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "Get Data",
+    "payload": "{\"trends\":[\"648fe2d7ef603539\"],\"limit\":5,\"aggregation\":\"NONE\"}",
+    "payloadType": "json",
+    "x": 110,
+    "y": 300,
+    "wires": [
+      [
+        "acc7bbec10537752",
+        "212ebb0fd679c2a3"
+      ]
+    ]
+  },
+  {
+    "id": "ae640a440d2ffb49",
+    "type": "comment",
+    "z": "31a2e5f643e6f15e",
+    "name": "Request The last Samples with no Aggreagtion",
+    "info": "",
+    "x": 550,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "acc7bbec10537752",
+    "type": "SQL-Lite",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "configuration": "4ec688a8f44460f2",
+    "logsizeType": "num",
+    "x": 1040,
+    "y": 300,
+    "wires": [
+      [
+        "996ee80a71ad16cf"
+      ]
+    ]
+  },
+  {
+    "id": "f3fd95f5fdd99814",
+    "type": "inject",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "Get Data",
+    "payload": "{\"trends\":[\"648fe2d7ef603539\"],\"limit\":1000,\"aggregation\":\"SUM\"}",
+    "payloadType": "json",
+    "x": 110,
+    "y": 400,
+    "wires": [
+      [
+        "08488cf4f6fdacb5"
+      ]
+    ]
+  },
+  {
+    "id": "08488cf4f6fdacb5",
+    "type": "function",
+    "z": "31a2e5f643e6f15e",
+    "name": "set from",
+    "func": "d = new Date();\nd.setDate(d.getDate()-3)\nmsg.payload.from = d;\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 360,
+    "y": 400,
+    "wires": [
+      [
+        "08bc9dcedc1defcd"
+      ]
+    ]
+  },
+  {
+    "id": "08bc9dcedc1defcd",
+    "type": "function",
+    "z": "31a2e5f643e6f15e",
+    "name": "set until",
+    "func": "d = new Date();\nd.setDate(d.getDate())\nmsg.payload.until = d;\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 540,
+    "y": 400,
+    "wires": [
+      [
+        "acc7bbec10537752"
+      ]
+    ]
+  },
+  {
+    "id": "d9d3e9369d02ed6d",
+    "type": "comment",
+    "z": "31a2e5f643e6f15e",
+    "name": "Request The Sum of the Samples in the last 3 days",
+    "info": "",
+    "x": 540,
+    "y": 340,
+    "wires": []
+  },
+  {
+    "id": "212ebb0fd679c2a3",
+    "type": "debug",
+    "z": "31a2e5f643e6f15e",
+    "name": "debug 73",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 540,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "996ee80a71ad16cf",
+    "type": "debug",
+    "z": "31a2e5f643e6f15e",
+    "name": "debug 74",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1260,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "9b44d73772ee58f1",
+    "type": "inject",
+    "z": "31a2e5f643e6f15e",
+    "name": "",
+    "props": [
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "Get All Trends",
+    "x": 250,
+    "y": 640,
+    "wires": [
+      [
+        "acc7bbec10537752"
+      ]
+    ]
+  },
+  {
+    "id": "ec8ed1a9a55ea55d",
+    "type": "comment",
+    "z": "31a2e5f643e6f15e",
+    "name": "Request all Trend Configurations",
+    "info": "",
+    "x": 470,
+    "y": 540,
+    "wires": []
+  },
+  {
+    "id": "4ec688a8f44460f2",
+    "type": "SQL-DB",
+    "name": "SQL-LIte",
+    "path": "/home/pi/mydb.db",
+    "trend_table": "trend",
+    "data_table": "data"
+  }
+]

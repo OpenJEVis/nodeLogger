@@ -27,25 +27,25 @@ module.exports = function (RED) {
                     await createSample({action:msg.topic,payload:msg.payload}).catch(reason => {
                         node.log(reason);
                     }).finally(() => {
-                        sqlite.closeDB();
+                        sqlite.closeDB;
                     })
                 } else if (msg.topic == "Update Trend") {
                     await updateTrend({action:msg.topic,payload:msg.payload}).catch(reason => {
                         node.log(reason);
                     }).finally(() => {
-                        sqlite.closeDB();
+                        sqlite.closeDB;
                     })
                 } else if (msg.topic == "Delete Samples") {
                     await deleteSamples({action:msg.topic,payload:msg.payload}).catch(reason => {
                         node.log(reason);
                     }).finally(() => {
-                        sqlite.closeDB();
+                        sqlite.closeDB;
                     })
                 } else if (msg.topic == "Delete Trend") {
                    await  deleteTrend({action:msg.topic,payload:msg.payload}).catch(reason => {
                         node.log(reason);
                     }).finally(() => {
-                       sqlite.closeDB();
+                       sqlite.closeDB;
                     })
                 } else if (msg.topic == "Get All Trends") {
                     result = await getAlltrends();

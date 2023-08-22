@@ -46,7 +46,7 @@ class Sqlite {
     createDataEntry = async ({table, object}) => {
         //this.node.log("Creates Sample: " + JSON.stringify(object));
         const keys = Object.keys(object).join(",");
-        const res = await this.db.prepare(`INSERT INTO ${table} (${keys}) VALUES (@id,@status,@value,@date_time) `);
+        const res = await this.db.prepare(`INSERT INTO ${table} (${keys}) VALUES (@trend_id,@status,@value,@date_time) `);
 
 
         res.run(object);
@@ -219,11 +219,11 @@ class Sqlite {
     closeDB(){
         this.db.close();
     }
-    // closeDB = async () =>{
-    //     //this.node.log("close db connection");
-    //     this.db.close();
+    closeDB = async () =>{
+        //this.node.log("close db connection");
+        this.db.close();
 
-//}
+}
      generateDatabaseDateTime(date) {
 
          if (date == undefined) {

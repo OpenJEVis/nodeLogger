@@ -38,7 +38,7 @@ module.exports = function (app, config, sqlite, credentials) {
         }).catch(reason => {
             res.status(400).send(reason);
         }).finally(() => {
-            sqlite.closeDB();
+            sqlite.closeDB;
         })
     })
 
@@ -111,7 +111,7 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite.closeDB();
+                sqlite.closeDB;
             });
         } else if (req.query.aggregation == "SUM") {
             sqlite.requestDataSum({
@@ -127,7 +127,7 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite.closeDB();
+                sqlite.closeDB;
             });
         } else if (req.query.aggregation == "AVG") {
             sqlite.requestDataAvg({
@@ -143,7 +143,7 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite.closeDB();
+                sqlite.closeDB;
             });
         } else if (req.query.aggregation == "MAX") {
             sqlite.requestDataMax({
@@ -162,7 +162,7 @@ module.exports = function (app, config, sqlite, credentials) {
                 logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite.closeDB();
+                sqlite.closeDB;
             });
         } else if (req.query.aggregation == "MIN") {
             sqlite.requestDataMin({
@@ -180,7 +180,7 @@ module.exports = function (app, config, sqlite, credentials) {
                 logger.error(reason);
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite.closeDB();
+                sqlite.closeDB;
             });
         } else if (req.query.aggregation == "DIFF") {
             sqlite.requestDataDiff({
@@ -196,7 +196,7 @@ module.exports = function (app, config, sqlite, credentials) {
             }).catch(reason => {
                 res.status(400).send(reason);
             }).finally(() => {
-                sqlite.closeDB();
+                sqlite.closeDB;
             });
         }else {
             res.status(422).send("aggregation not found");
