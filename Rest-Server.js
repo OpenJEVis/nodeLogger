@@ -1,3 +1,4 @@
+const ip = require("ip");
 
 module.exports = function (RED) {
     function LowerCaseNode(config) {
@@ -37,8 +38,10 @@ module.exports = function (RED) {
                     }
                     urls = [];
                     Object.keys(require('os').networkInterfaces()).forEach(value => {
-                       node.debug(value);
-                        urls.push({url: "http://" + ip.address(value) + ":3000", description: value});
+                        if (!value.includes("lo")) {
+                            node.debug(value);
+                            urls.push({url: "http://" + ip.address(value) + ":3000", description: value});
+                        }
                     });
                     swaggerFile.servers = urls;
                     app.use(bodyParser.json());

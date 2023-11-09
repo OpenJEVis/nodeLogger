@@ -1,11 +1,15 @@
 const sqlite3 = require("./database/db-access");
+const converter = require("json-2-csv");
 module.exports = function (RED) {
     function LoggerNode(config) {
         RED.nodes.createNode(this, config);
         const  node = this;
         node.configuration = RED.nodes.getNode(config.configuration,node);
         const sqlite3 = require('./database/db-access');
+        let converter = require('json-2-csv');
         const sqlite = new sqlite3(node.configuration.path,node);
+        const fs = require('fs');
+        const http = require('http');
 
         this.on('input', async function (msg, send, done) {
             node.log(JSON.stringify(msg.payload));
@@ -48,7 +52,7 @@ module.exports = function (RED) {
                        sqlite.closeDB;
                     })
                 } else if (msg.topic == "Get All Trends") {
-                    result = await getAlltrends();
+                   let result = await getAlltrends();
                     if (result != null) {
                         node.status({fill: "green", shape: "dot", text: "get Trends: " + result.length});
                     }
@@ -56,7 +60,7 @@ module.exports = function (RED) {
                 }else if (msg.topic == "Get Data") {
                     node.log(msg.payload)
 
-                    result = await getData({
+                   let result = await getData({
                         aggregation: msg.payload.aggregation,
                         from: setFrom(msg.payload.from),
                         until: setUntil(msg.payload.until),
@@ -67,7 +71,7 @@ module.exports = function (RED) {
 
                         node.status({fill: "green", shape: "dot", text: "get Trends: " + result.length});
                     }
-                    node.send({payload: result,trends:msg.payload.trends})
+                    node.send({payload: result,trends:msg.payload.trends,topic:msg.topic})
                 }
             } catch (e) {
                 done(e);
@@ -170,76 +174,17 @@ module.exports = function (RED) {
         }
         const getData = async({aggregation,from,until,listTrendIds,limit})=>{
             node.debug("aggregation:"+aggregation)
-            switch (aggregation) {
-                case "NONE":
-                    result = await sqlite.requestData({
-                        trend: listTrendIds,
-                        from: sqlite.generateDatabaseDateTime(from),
-                        until: sqlite.generateDatabaseDateTime(until),
-                        data_table: node.configuration.data_table,
-                        trend_table: node.configuration.trend_table,
-                        limit
-                    });
-                    return result;
-                    break;
-                case "SUM":
-                    result = await sqlite.requestDataSum({
-                        trend: listTrendIds,
-                        from: sqlite.generateDatabaseDateTime(from),
-                        until: sqlite.generateDatabaseDateTime(until),
-                        data_table: node.configuration.data_table,
-                        trend_table: node.configuration.trend_table,
-                        limit
-                    });
-                    return result;
-                    break;
-                case "AVG":
-                    result = await sqlite.requestDataAvg({
-                        trend: listTrendIds,
-                        from: sqlite.generateDatabaseDateTime(from),
-                        until: sqlite.generateDatabaseDateTime(until),
-                        data_table: node.configuration.data_table,
-                        trend_table: node.configuration.trend_table,
-                        limit
-                    });
-                    return result;
-                    break;
-                case "MIN":
-                    result = await sqlite.requestDataMin({
-                        trend: listTrendIds,
-                        from: sqlite.generateDatabaseDateTime(from),
-                        until: sqlite.generateDatabaseDateTime(until),
-                        data_table: node.configuration.data_table,
-                        trend_table: node.configuration.trend_table,
-                        limit
-                    });
-                    return result;
-                    break;
-                case "MAX":
-                    result = await sqlite.requestDataMax({
-                        trend: listTrendIds,
-                        from: sqlite.generateDatabaseDateTime(from),
-                        until: sqlite.generateDatabaseDateTime(until),
-                        data_table: node.configuration.data_table,
-                        trend_table: node.configuration.trend_table,
-                        limit
-                    });
-                    return result;
-                    break;
-                case "DIFF":
-                    result = await sqlite.requestDataDiff({
-                        trend: listTrendIds,
-                        from: sqlite.generateDatabaseDateTime(from),
-                        until: sqlite.generateDatabaseDateTime(until),
-                        data_table: node.configuration.data_table,
-                        trend_table: node.configuration.trend_table,
-                        limit
-                    });
-                    return result;
-                    break;
-
-
-            }
+            let result;
+            result = await sqlite.request({
+                trend: listTrendIds,
+                from: sqlite.generateDatabaseDateTime(from),
+                until: sqlite.generateDatabaseDateTime(until),
+                data_table: node.configuration.data_table,
+                trend_table: node.configuration.trend_table,
+                limit:limit,
+                aggregation:aggregation
+            });
+            return result;
         }
     }
     RED.nodes.registerType("SQL-Lite", LoggerNode);

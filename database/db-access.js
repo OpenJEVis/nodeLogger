@@ -95,6 +95,78 @@ class Sqlite {
         const res = await this.db.prepare(`SELECT DISTINCT * FROM ${trend_table}`)
         return res.all();
     };
+
+    request = async ({trend, data_table, trend_table, from,until,limit,aggregation})=>{
+        switch (aggregation){
+            case "SUM":
+                return await this.requestDataSum({
+                    trend: trend,
+                    from: from,
+                    until: until,
+                    limit: limit,
+                    trend_table: trend_table,
+                    data_table: data_table
+
+                });
+                break
+            case "AVG":
+                return await this.requestDataAvg({
+                    trend: trend,
+                    from: from,
+                    until: until,
+                    limit: limit,
+                    trend_table: trend_table,
+                    data_table: data_table
+
+                });
+                break
+            case "MIN":
+                return await this.requestDataMin({
+                    trend: trend,
+                    from: from,
+                    until: until,
+                    limit: limit,
+                    trend_table: trend_table,
+                    data_table: data_table
+
+                });
+
+                break
+            case "MAX":
+                return await this.requestDataMax({
+                    trend: trend,
+                    from: from,
+                    until: until,
+                    limit: limit,
+                    trend_table: trend_table,
+                    data_table: data_table
+
+                });
+                break
+            case "DIFF":
+                return await this.requestDataDiff({
+                    trend: trend,
+                    from: from,
+                    until: until,
+                    limit: limit,
+                    trend_table: trend_table,
+                    data_table: data_table
+
+                });
+                break
+            default:
+                return await this.requestData({
+                    trend: trend,
+                    from: from,
+                    until: until,
+                    limit: limit,
+                    trend_table: trend_table,
+                    data_table: data_table
+
+                });
+        }
+    }
+
     requestData = async ({trend, data_table, trend_table, from,until,limit}) => {
 
         let queryString;
