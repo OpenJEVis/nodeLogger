@@ -112,7 +112,7 @@ module.exports = function (app, config, sqlite, credentials) {
 
         }).then(value => {
 
-            const csv = converter.json2csv(value, {delimiter: ';'});
+            const csv = converter.json2csv(value, {delimiter: ';',excludeKeys:["id"]});
             // fs.writeFile("/tmp/"+filename+".csv", csv, function(err) {
             //     if(err) {
             //         return console.log(err);
