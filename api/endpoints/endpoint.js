@@ -79,13 +79,6 @@ module.exports = function (app, config, sqlite, credentials) {
           }
       */
 
-        /*  #swagger.parameters['limit'] = {
-            in: 'query',
-            description: 'Limit of Data Samples',
-            required: false,
-            type: 'string'
-        }
-    */
 
         /*  #swagger.parameters['aggregation'] = {
              in: 'query',
@@ -105,7 +98,6 @@ module.exports = function (app, config, sqlite, credentials) {
         let trend = [req.query.id];
         let from = req.query.from;
         let until = req.query.until;
-        let limit = req.query.limit;
         let filename = req.query.filename;
 
 
@@ -114,7 +106,7 @@ module.exports = function (app, config, sqlite, credentials) {
             trend: getTrendIds(trend),
             from: from,
             until: until,
-            limit: limit,
+            limit: 2147483647,
             trend_table: config.trend_table,
             data_table: config.data_table
 

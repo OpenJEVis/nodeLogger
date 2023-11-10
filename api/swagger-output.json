@@ -115,15 +115,6 @@
             }
           },
           {
-            "name": "limit",
-            "in": "query",
-            "description": "Limit of Data Samples",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "aggregation",
             "in": "query",
             "description": "aggregation methode (NONE,SUM,AVG,MIN,MAX,DIFF)",
@@ -143,9 +134,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "400": {
             "description": "Bad Request"
           },

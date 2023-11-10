@@ -172,12 +172,12 @@ class Sqlite {
         let queryString;
         if (from == undefined || from == "undefined") {
             queryString =(`SELECT D.id, D.trend_id, D.value, D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
+                                             WHERE trend_id IN (${trend})
                                             LIMIT '${limit}' `);
         }else {
             queryString =(`SELECT D.id, D.trend_id, D.value, D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
                                              WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
+                                            AND date_time BETWEEN '${from}' AND '${until}' LIMIT '${limit}' `);
         }
 
         //console.log(queryString);
@@ -191,12 +191,12 @@ class Sqlite {
         let queryString;
         if (from == undefined || from == "undefined") {
             queryString =(`SELECT D.id, D.trend_id, SUM(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
+                                             WHERE trend_id IN (${trend}) 
                                             LIMIT '${limit}' `);
         }else {
             queryString =(`SELECT D.id, D.trend_id, SUM(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
                                              WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
+                                            AND date_time BETWEEN '${from}' AND '${until}'  LIMIT '${limit}' `);
         }
 
 
@@ -210,12 +210,12 @@ class Sqlite {
         let queryString;
         if (from == undefined || from == "undefined") {
             queryString =(`SELECT D.id, D.trend_id, AVG(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
+                                             WHERE trend_id IN (${trend})
                                             LIMIT '${limit}' `);
         }else {
             queryString =(`SELECT D.id, D.trend_id, AVG(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
                                              WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
+                                            AND date_time BETWEEN '${from}' AND '${until}' LIMIT '${limit}' `);
         }
 
 
@@ -229,12 +229,12 @@ class Sqlite {
         let queryString;
         if(from == undefined || from == "undefined") {
             queryString =(`SELECT D.id, D.trend_id, MIN(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
+                                             WHERE trend_id IN (${trend})
                                             LIMIT '${limit}' `);
         }else {
             queryString =(`SELECT D.id, D.trend_id, MIN(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
                                              WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
+                                            AND date_time BETWEEN '${from}' AND '${until}'  LIMIT '${limit}' `);
         }
 
 
@@ -248,12 +248,12 @@ class Sqlite {
         let queryString;
         if (from == undefined || from == "undefined") {
             queryString =(`SELECT D.id, D.trend_id, MAX(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
+                                             WHERE trend_id IN (${trend}) 
                                             LIMIT '${limit}' `);
         }else {
             queryString =(`SELECT D.id, D.trend_id, MAX(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
                                              WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
+                                            AND date_time BETWEEN '${from}' AND '${until}' LIMIT '${limit}' `);
         }
 
 
@@ -276,12 +276,12 @@ class Sqlite {
         let queryString;
         if (from == undefined || from == "undefined") {
             queryString =(`SELECT D.id, D.trend_id, getDiff(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table}  as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
-                                             WHERE trend_id IN (${trend}) ORDER BY D.id DESC
+                                             WHERE trend_id IN (${trend}) 
                                             LIMIT '${limit}' `);
         }else {
             queryString =(`SELECT D.id, D.trend_id, getDiff(D.value), D.date_time, D.status, T.name, T.config  FROM ${data_table} as D INNER JOIN ${trend_table} as T ON D.trend_id=T.id
                                              WHERE trend_id IN (${trend})
-                                            AND date_time BETWEEN '${from}' AND '${until}' ORDER BY D.id DESC LIMIT '${limit}' `);
+                                            AND date_time BETWEEN '${from}' AND '${until}' LIMIT '${limit}' `);
         }
 
 
