@@ -134,6 +134,7 @@ module.exports = function (app, config, sqlite, credentials) {
                     if (err) {
                         console.log(err);
                     }
+                    fs.unlink("/tmp/" + filename + ".csv");
                 });
             }).catch(reason => {
                 res.status(400).send(reason).end();
