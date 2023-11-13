@@ -1,6 +1,6 @@
 {
   "name": "@envidatec/node-red-contrib-logger",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Logs Data into SQL-Lite",
   "keywords": [
     "node-red"
@@ -39,6 +39,7 @@
     "morgan": "^1.10.0",
     "pino": "^8.14.2",
     "swagger-autogen": "^2.23.5",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "json-2-csv":"^5.0.1"
   }
 }

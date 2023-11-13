@@ -1,3 +1,6 @@
+const fs = require("fs").promises;
+const http = require("http");
+const converter = require("json-2-csv");
 module.exports = function (app, config, sqlite, credentials) {
     const basicAuth = require('express-basic-auth')
     const sqlite3 = require("../../database/db-access");
@@ -10,7 +13,7 @@ module.exports = function (app, config, sqlite, credentials) {
     app.get('/api/trends', basicAuth({authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
     ), (req, res) => {
 
-       /* #swagger.responses[401] = { description: "Unauthorized" }*/
+        /* #swagger.responses[401] = { description: "Unauthorized" }*/
 
         /* #swagger.responses[200] = {
                    description: 'User successfully obtained.',
@@ -42,10 +45,103 @@ module.exports = function (app, config, sqlite, credentials) {
         })
     })
 
+    app.get("/api/download", basicAuth({
+        authorizer: myAuthorizer,
+        unauthorizedResponse: getUnauthorizedResponse
+    }), (req, res) => {
+        /* #swagger.security = [{
+           "basicAuth": []
+   }]
+   */
+        /* #swagger.responses[401] = { description: "Unauthorized" }*/
+        /*  #swagger.parameters['id'] = {
+              in: 'query',
+              description: 'Trend ID',
+              required: true,
+              type: 'string'
+          }
+      */
+
+
+        /*  #swagger.parameters['from'] = {
+               in: 'query',
+               description: 'from date in from yyyy-MM-dd HH:mm:ss in UTC',
+               required: false,
+               type: 'string'
+           }
+       */
+
+        /*  #swagger.parameters['until'] = {
+              in: 'query',
+              description: 'until date in from yyyy-MM-dd HH:mm:ss in UTC',
+              required: false,
+              type: 'string'
+          }
+      */
+
+
+        /*  #swagger.parameters['aggregation'] = {
+             in: 'query',
+             description: 'aggregation methode (NONE,SUM,AVG,MIN,MAX,DIFF)',
+             required: false,
+             type: 'string'
+         }
+     */
+
+        /*  #swagger.parameters['filename'] = {
+       in: 'query',
+       description: 'name of the filename',
+       required: true,
+       type: 'string'
+   }
+*/
+        let trend = [req.query.id];
+        let from = req.query.from;
+        let until = req.query.until;
+        let filename = req.query.filename;
+
+
+        sqlite.request({
+            aggregation: req.query.aggregation,
+            trend: getTrendIds(trend),
+            from: from,
+            until: until,
+            limit: 2147483647,
+            trend_table: config.trend_table,
+            data_table: config.data_table
+
+        }).then(value => {
+
+            const csv = converter.json2csv(value, {delimiter: ';',excludeKeys:["id"]});
+            // fs.writeFile("/tmp/"+filename+".csv", csv, function(err) {
+            //     if(err) {
+            //         return console.log(err);
+            //     }
+            //     console.log("The file was saved!");
+            //
+            // });
+            fs.writeFile("/tmp/" + filename + ".csv", csv,).then(value1 => {
+                console.log("The file was saved!");
+                res.download("/tmp/" + filename + ".csv", function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    fs.unlink("/tmp/" + filename + ".csv");
+                });
+            }).catch(reason => {
+                res.status(400).send(reason).end();
+            })
+        }).finally(() => {
+            sqlite.closeDB
+        });
+    })
     /* NOTE: 100% automatic */
     app.get('/api/data', basicAuth({
-            authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
+            authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse
+        }
     ), (req, res) => {
+
+
         /* #swagger.security = [{
               "basicAuth": []
       }]
@@ -98,110 +194,22 @@ module.exports = function (app, config, sqlite, credentials) {
         let until = req.query.until;
         let limit = req.query.limit;
         if (limit == undefined) limit = 1000;
-        if (req.query.aggregation == undefined || req.query.aggregation == "NONE") {
-            sqlite.requestData({
-                trend: getTrendIds(trend),
-                from: from,
-                until: until,
-                limit: limit,
-                trend_table: config.trend_table,
-                data_table: config.data_table
-            }).then(value => {
-                res.status(200).send(value);
-            }).catch(reason => {
-                res.status(400).send(reason);
-            }).finally(() => {
-                sqlite.closeDB;
-            });
-        } else if (req.query.aggregation == "SUM") {
-            sqlite.requestDataSum({
-                trend: getTrendIds(trend),
-                from: from,
-                until: until,
-                limit: limit,
-                trend_table: config.trend_table,
-                data_table: config.data_table
-            }).then(value => {
-                res.status(200).send(value);
+        sqlite.request({
+            aggregation: req.query.aggregation,
+            trend: getTrendIds(trend),
+            from: from,
+            until: until,
+            limit: limit,
+            trend_table: config.trend_table,
+            data_table: config.data_table
 
-            }).catch(reason => {
-                res.status(400).send(reason);
-            }).finally(() => {
-                sqlite.closeDB;
-            });
-        } else if (req.query.aggregation == "AVG") {
-            sqlite.requestDataAvg({
-                trend: getTrendIds(trend),
-                from: from,
-                until: until,
-                limit: limit,
-                trend_table: config.trend_table,
-                data_table: config.data_table
-            }).then(value => {
-                res.status(200).send(value);
-
-            }).catch(reason => {
-                res.status(400).send(reason);
-            }).finally(() => {
-                sqlite.closeDB;
-            });
-        } else if (req.query.aggregation == "MAX") {
-            sqlite.requestDataMax({
-                trend: getTrendIds(trend),
-                from: from,
-                until: until,
-                limit: limit,
-                trend_table: config.trend_table,
-                data_table: config.data_table
-            }).then(value => {
-                logger.debug(value);
-
-                res.status(200).send(value);
-
-            }).catch(reason => {
-                logger.error(reason);
-                res.status(400).send(reason);
-            }).finally(() => {
-                sqlite.closeDB;
-            });
-        } else if (req.query.aggregation == "MIN") {
-            sqlite.requestDataMin({
-                trend: getTrendIds(trend),
-                from: from,
-                until: until,
-                limit: limit,
-                trend_table: config.trend_table,
-                data_table: config.data_table
-            }).then(value => {
-                logger.debug(value);
-                res.status(200).send(value);
-
-            }).catch(reason => {
-                logger.error(reason);
-                res.status(400).send(reason);
-            }).finally(() => {
-                sqlite.closeDB;
-            });
-        } else if (req.query.aggregation == "DIFF") {
-            sqlite.requestDataDiff({
-                trend: getTrendIds(trend),
-                from: from,
-                until: until,
-                limit: limit,
-                trend_table: config.trend_table,
-                data_table: config.data_table
-            }).then(value => {
-                res.status(200).send(value);
-
-            }).catch(reason => {
-                res.status(400).send(reason);
-            }).finally(() => {
-                sqlite.closeDB;
-            });
-        }else {
-            res.status(422).send("aggregation not found");
-        }
-
+        }).then(value => {
+            res.status(200).send(value).end();
+        }).catch(reason => {
+            res.status(400).send(reason).end();
+        }).finally(() => {
+            sqlite.closeDB;
+        })
     })
 
 
