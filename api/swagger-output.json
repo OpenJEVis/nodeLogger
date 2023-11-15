@@ -122,15 +122,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "filename",
-            "in": "query",
-            "description": "name of the filename",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
