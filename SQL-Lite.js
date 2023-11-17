@@ -15,7 +15,7 @@ module.exports = function (RED) {
             node.log(JSON.stringify(msg.payload));
             try {
                 const createTable = async () => {
-                    await sqlite.createtrendTable(node.configuration.trend_table);
+                    await sqlite.createtrendTable({trend_table:node.configuration.trend_table});
 
                     await sqlite.createdataTable({
                         trend_table: node.configuration.trend_table,

@@ -87,18 +87,10 @@ module.exports = function (app, config, sqlite, credentials) {
              type: 'string'
          }
      */
-
-        /*  #swagger.parameters['filename'] = {
-       in: 'query',
-       description: 'name of the filename',
-       required: true,
-       type: 'string'
-   }
-*/
         let trend = [req.query.id];
         let from = req.query.from;
         let until = req.query.until;
-        let filename = req.query.filename;
+        let filename = req.query.id;
 
 
         sqlite.request({
@@ -122,7 +114,7 @@ module.exports = function (app, config, sqlite, credentials) {
             // });
             fs.writeFile("/tmp/" + filename + ".csv", csv,).then(value1 => {
                 console.log("The file was saved!");
-                res.download("/tmp/" + filename + ".csv", function (err) {
+                res.download("/tmp/" + filename + ".csv",filename+".csv", function (err) {
                     if (err) {
                         console.log(err);
                     }
