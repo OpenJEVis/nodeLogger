@@ -8,7 +8,9 @@ module.exports = function (app, config, sqlite, credentials) {
     const pino = require('pino');
     const {query} = require("express");
 
-
+    app.get('/',(req,res)=>{
+        res.redirect('/doc');
+    });
     /* NOTE: 100% automatic */
     app.get('/api/trends', basicAuth({authorizer: myAuthorizer, unauthorizedResponse: getUnauthorizedResponse}
     ), (req, res) => {
